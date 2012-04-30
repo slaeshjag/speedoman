@@ -1,0 +1,2 @@
+default:
+	cp *.png ../bin
