@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <darnit.h>
+#include <darnit/darnit.h>
 
 
 #include "state.h"

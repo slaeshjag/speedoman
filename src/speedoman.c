@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
 
 	s = malloc(sizeof(SPEEDOMAN));
 
-	if ((handle = darnitInit("Speedoman")) == NULL)
+	if ((handle = darnitInit("Speedoman", "speedoman")) == NULL)
 		return -1;
 	
 	/* Nollställer allt och sätter upp alla strukturer för informationsskärm som visas i början */
@@ -27,10 +27,10 @@ int main(int argc, char **argv) {
 
 	for (;;) {
 		stateHandle(s);
-		keys = darnitButtonGet(handle);
+		keys = darnitButtonGet();
 		if (keys.x)
 			return 0;
-		darnitLoop(handle);
+		darnitLoop();
 	}
 
 	return 0;
