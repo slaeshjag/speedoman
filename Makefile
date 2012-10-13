@@ -1,4 +1,4 @@
-SOURCE = src/speedoman.c src/state.c
+SOURCE = src/speedoman.c src/state.c src/movable.c src/level.c
 LDFLAGS += -ldarnit 
 BINARY = bin/speedoman
 

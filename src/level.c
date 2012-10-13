@@ -4,12 +4,12 @@
 int levelLoad(void *handle, const char *level) {
 	SPEEDOMAN *s = handle;
 	FILE *fp;
-	char fname[256];
 
-	if ((fp = fopen(level, "r")) == NULL) {
-		fprintf(stderr, "Unable to load level %s\n", level);
+	if (s->active_level)
+		s->active_level = darnitMapUnload(s->active_level);
+	
+	if (!(s->active_level = darnitMapLoad(level)))
 		return -1;
-	}
 
 	return 0;
 }

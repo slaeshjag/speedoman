@@ -8,42 +8,27 @@
 
 #include <darnit/darnit.h>
 
-
 #include "state.h"
-
-typedef struct {
-	DARNIT_TILEMAP		map;
-	DARNIT_TILEMAP		backdrop;
-} TILEMAP;
+#include "movable.h"
 
 
 typedef struct {
-	void			*mapsheet;
-	void			*backdropsheet;
-} TILESHEET;
+	int			terminal_velocity;
+	int			jump_acceleration;
+	int			gravity_strong;
+	int			gravity_weak;
+} CONFIG;
 
 
 typedef struct {
-	int			bbox;
-	void			*sprite;
-	int			x;
-	int			y;
-} MOVABLE_ENTRY;
-	
-
-typedef struct {
-	MOVABLE_ENTRY		*movable;
-	int			movables;
-} MOVABLE;
-
-
-typedef struct {
-	TILEMAP			tilemap;
-	TILESHEET		tilesheet;
 	MOVABLE			movable;
+	DARNIT_MAP		*active_level;
+	DARNIT_STRINGTABLE	*config;
+	CONFIG			cfg;
 	int			state;
 	int			newstate;
 } SPEEDOMAN;
 
+SPEEDOMAN *s;		/* Just this one, promise :x */
 
 #endif
