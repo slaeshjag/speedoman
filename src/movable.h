@@ -8,6 +8,14 @@
 
 
 typedef struct {
+	int			x;
+	int			y;
+	int			w;
+	int			h;
+} MOVABLE_HITBOX;
+
+
+typedef struct {
 	int			bbox;
 	DARNIT_SPRITE		*sprite;
 	int			x;
@@ -15,15 +23,25 @@ typedef struct {
 	int			l;
 	int			w;
 	int			h;
+	int			x_off;
+	int			y_off;
+	int			direction;
 	int			velocity;
 	int			gravity_effect;
+	MOVABLE_HITBOX		hitbox[32];
+	void			(*ai)(void *s, void *entry);
 } MOVABLE_ENTRY;
 	
 
 typedef struct {
 	MOVABLE_ENTRY		*movable;
 	int			movables;
+	DARNIT_STRINGTABLE	*hitbox_data;
+	DARNIT_DYNLIB		*ai;
+	DARNIT_STRINGTABLE	*ai_table;
 } MOVABLE;
+
+int movableInit();
 
 
 #endif

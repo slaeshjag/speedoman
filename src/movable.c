@@ -1,12 +1,85 @@
 #include "speedoman.h"
 
 
+int movableInit() {
+	s->movable.movable = NULL;
+	s->movable.movables = 0;
+
+	s->movable.ai = darnitDynlibOpen(darnitStringtableEntryGet(s->config, "AI_LIB"));
+	s->movable.ai_table = darnitStringtableOpen(darnitStringtableEntryGet(s->config, "AI_TABLE"));
+	
+	if (!s->movable.ai || !s->movable.ai_table)
+		return -1;
+
+	return 0;
+}
+
+
+void movableHitboxLoad(MOVABLE_ENTRY *entry, const char *name) {
+	int i, coords[32*4];
+
+	i = darnitUtilStringToIntArray(darnitStringtableEntryGet(s->config, name), ",", coords, 32*4);
+
+	for (; i < 32*4; i++)
+		coords[i] = -1;
+	
+	for (i = 0; i < 32; i++) {
+		entry->hitbox[i].x = coords[i*4];
+		entry->hitbox[i].y = coords[i*4 + 1];
+		entry->hitbox[i].w = coords[i*4 + 2];
+		entry->hitbox[i].h = coords[i*4 + 3];
+	}
+
+	return;
+}
+
+
+void movableUpdateHitbox(MOVABLE_ENTRY *entry) {
+	entry->w = entry->hitbox[entry->direction].w;
+	entry->h = entry->hitbox[entry->direction].h;
+	entry->x_off = entry->hitbox[entry->direction].x;
+	entry->y_off = entry->hitbox[entry->direction].y;
+
+	return;
+}
+
+
+int movableLoad() {
+	int i;
+	MOVABLE_ENTRY *entry;
+
+	for (i = 0; i < s->movable.movables; i++)
+		darnitSpriteDelete(s->movable.movable[i].sprite);
+	if ((entry = realloc(s->movable.movable, sizeof(MOVABLE_ENTRY) * s->active_level->objects)) == NULL) {
+		free(s->movable.movable);
+		movableInit();
+		return -1;
+	}
+
+	s->movable.movable = entry;
+	s->movable.movables = s->active_level->objects;
+
+	for (i = 0; i < s->movable.movables; i++) {
+		movableHitboxLoad(&s->movable.movable[i], darnitMapPropGet(s->active_level->object[i].ref, "NAME"));
+		s->movable.movable[i].sprite = darnitSpriteLoad(darnitMapPropGet(s->active_level->object[i].ref, "sprite"), 0, DARNIT_PFORMAT_RGB5A1);
+		s->movable.movable[i].ai = darnitDynlibGet(s->movable.ai, darnitStringtableEntryGet(s->movable.ai_table, darnitMapPropGet(s->active_level->object[i].ref, "ai")));
+		s->movable.movable[i].x = s->active_level->object[i].x;
+		s->movable.movable[i].y = s->active_level->object[i].y;
+		s->movable.movable[i].l = s->active_level->object[i].l;
+		s->movable.movable[i].direction = 0;
+		movableUpdateHitbox(&s->movable.movable[i]);
+	}
+
+	return 0;
+}
+
+
 int movableGravity(MOVABLE_ENTRY *entry) {
 	int gravity, delta, xi, dx, yi, dy, i, j, final_y;
 	DARNIT_MAP_LAYER *layer = &s->active_level->layer[entry->l];
 
 	if (entry->gravity_effect == 0)
-		return;
+		return -1;
 	gravity = (entry->gravity_effect == 2) ? s->cfg.gravity_strong : s->cfg.gravity_weak;
 
 	if (entry->velocity + gravity * darnitTimeLastFrameTook() > s->cfg.terminal_velocity)

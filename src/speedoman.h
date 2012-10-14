@@ -10,6 +10,7 @@
 
 #include "state.h"
 #include "movable.h"
+#include "level.h"
 
 
 typedef struct {

@@ -1,6 +1,7 @@
 SOURCE = src/speedoman.c src/state.c src/movable.c src/level.c
 LDFLAGS += -ldarnit 
 BINARY = bin/speedoman
+CFLAGS += -Wall -g -O0
 
 default:
 	mkdir -p bin

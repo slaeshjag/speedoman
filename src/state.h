@@ -8,4 +8,7 @@
 #define			STATE_TESTMAP		100
 
 
+int stateHandle();
+
+
 #endif
