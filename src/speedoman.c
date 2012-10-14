@@ -9,9 +9,6 @@ SPEEDOMAN *speedomanInit() {
 	s->newstate = STATE_TESTGAME;
 	s->state = STATE_DUMMY;
 
-	s->movable.movable = NULL;
-	s->movable.movables = 0;
-
 	if ((s->config = darnitStringtableOpen("misc/config.ldsz")) == NULL)
 		return NULL;
 	darnitStringtableSectionLoad(s->config, "INDEX");
@@ -23,6 +20,7 @@ SPEEDOMAN *speedomanInit() {
 	s->cfg.gravity_weak = atoi(darnitStringtableEntryGet(s->config, "GRAVITY_WEAK"));
 	
 	s->active_level = NULL;
+	movableInit();
 
 	return s;
 }

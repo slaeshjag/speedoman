@@ -42,6 +42,9 @@ typedef struct {
 } MOVABLE;
 
 int movableInit();
+void movableUpdateHitbox(MOVABLE_ENTRY *entry);
+int movableLoad();
+int movableGravity(MOVABLE_ENTRY *entry);
 
 
 #endif
