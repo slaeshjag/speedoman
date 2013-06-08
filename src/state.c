@@ -10,7 +10,7 @@ void stateMap() {
 	int i;
 
 	for (i = 0; i < s->active_level->layers; i++)
-		darnitRenderTilemap(s->active_level->layer[i].tilemap);
+		d_tilemap_draw(s->active_level->layer[i].tilemap);
 	return;
 }
 

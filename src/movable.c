@@ -5,8 +5,8 @@ int movableInit() {
 	s->movable.movable = NULL;
 	s->movable.movables = 0;
 
-	s->movable.ai = darnitDynlibOpen(darnitStringtableEntryGet(s->config, "AI_LIB"));
-	s->movable.ai_table = darnitStringtableOpen(darnitStringtableEntryGet(s->config, "AI_TABLE"));
+	s->movable.ai = d_dynlib_open(d_stringtable_entry(s->config, "AI_LIB"));
+	s->movable.ai_table = d_stringtable_open(d_stringtable_entry(s->config, "AI_TABLE"));
 	
 	if (!s->movable.ai || !s->movable.ai_table)
 		return -1;
@@ -18,7 +18,7 @@ int movableInit() {
 void movableHitboxLoad(MOVABLE_ENTRY *entry, const char *name) {
 	int i, coords[32*4];
 
-	i = darnitUtilStringToIntArray(darnitStringtableEntryGet(s->config, name), ",", coords, 32*4);
+	i = d_util_string_to_int_array(d_stringtable_entry(s->config, name), ",", coords, 32*4);
 
 	for (; i < 32*4; i++)
 		coords[i] = -1;
@@ -49,8 +49,8 @@ int movableLoad() {
 	MOVABLE_ENTRY *entry;
 
 	for (i = 0; i < s->movable.movables; i++)
-		darnitSpriteDelete(s->movable.movable[i].sprite);
-	if ((entry = realloc(s->movable.movable, sizeof(MOVABLE_ENTRY) * s->active_level->objects)) == NULL) {
+		d_sprite_free(s->movable.movable[i].sprite);
+	if (!(entry = realloc(s->movable.movable, sizeof(MOVABLE_ENTRY) * s->active_level->objects))) {
 		free(s->movable.movable);
 		movableInit();
 		return -1;
@@ -60,9 +60,9 @@ int movableLoad() {
 	s->movable.movables = s->active_level->objects;
 
 	for (i = 0; i < s->movable.movables; i++) {
-		movableHitboxLoad(&s->movable.movable[i], darnitMapPropGet(s->active_level->object[i].ref, "NAME"));
-		s->movable.movable[i].sprite = darnitSpriteLoad(darnitMapPropGet(s->active_level->object[i].ref, "sprite"), 0, DARNIT_PFORMAT_RGB5A1);
-		s->movable.movable[i].ai = darnitDynlibGet(s->movable.ai, darnitStringtableEntryGet(s->movable.ai_table, darnitMapPropGet(s->active_level->object[i].ref, "ai")));
+		movableHitboxLoad(&s->movable.movable[i], d_map_prop(s->active_level->object[i].ref, "NAME"));
+		s->movable.movable[i].sprite = d_sprite_load(d_map_prop(s->active_level->object[i].ref, "sprite"), 0, DARNIT_PFORMAT_RGB5A1);
+		s->movable.movable[i].ai = d_dynlib_get(s->movable.ai, d_stringtable_entry(s->movable.ai_table, d_map_prop(s->active_level->object[i].ref, "ai")));
 		s->movable.movable[i].x = s->active_level->object[i].x;
 		s->movable.movable[i].y = s->active_level->object[i].y;
 		s->movable.movable[i].l = s->active_level->object[i].l;
@@ -82,9 +82,9 @@ int movableGravity(MOVABLE_ENTRY *entry) {
 		return -1;
 	gravity = (entry->gravity_effect == 2) ? s->cfg.gravity_strong : s->cfg.gravity_weak;
 
-	if (entry->velocity + gravity * darnitTimeLastFrameTook() > s->cfg.terminal_velocity)
+	if (entry->velocity + gravity * d_last_frame_time() > s->cfg.terminal_velocity)
 		entry->velocity = s->cfg.terminal_velocity;
-	delta = (entry->velocity * darnitTimeLastFrameTook() >> 16);
+	delta = (entry->velocity * d_last_frame_time() >> 16);
 	if (delta == 0)
 		return -1;
 	
