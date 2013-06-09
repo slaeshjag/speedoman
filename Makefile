@@ -1,12 +1,22 @@
-SOURCE = src/speedoman.c src/state.c src/movable.c src/level.c
-LDFLAGS += -ldarnit 
-BINARY = bin/speedoman
-CFLAGS += -Wall -g -O0
+## PRoject: Speedoman
+
+include config.mk
+MAKEFLAGS	+=	--no-print-directory
+TOPDIR		=	$(shell pwd)
+export TOPDIR
 
 default:
-	mkdir -p bin
-	$(CC) $(CFLAGS) $(SOURCE) -o $(BINARY) $(LDFLAGS)
-	cd res && make
+	@mkdir -p bin/
+	@echo " [ CD ] src/"
+	+@make -C src/
+	@echo " [ CD ] res/"
+	+@make -C res/
+	@echo
+	@echo "*** Build complete ***"
 
 clean:
-	rm -Rf bin
+	@echo " [ CD ] src/"
+	+@make -C src/ clean
+	@echo " [ CD ] res/"
+	+@make -C res/ clean
+	@$(RM) bin/
