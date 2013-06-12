@@ -1,13 +1,15 @@
-speedoman.png 48 48
+assets/speedoman.png 48 48
 
 # idle, looking left
 D
+H 15 17 20 31
 T 4000 0
 T 200 1
 E
 
 # idle, looking right
 D 
+H 15 17 20 31
 T 4000 3
 T 200 4
 E

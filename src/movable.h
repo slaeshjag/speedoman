@@ -26,8 +26,11 @@ typedef struct {
 	int			x_off;
 	int			y_off;
 	int			direction;
-	int			velocity;
+	int			x_velocity;
+	int			y_velocity;
 	int			gravity_effect;
+	int			hp;
+	int			hp_max;
 	MOVABLE_HITBOX		hitbox[32];
 	void			(*ai)(void *s, void *entry);
 } MOVABLE_ENTRY;
@@ -42,9 +45,9 @@ typedef struct {
 } MOVABLE;
 
 int movableInit();
-void movableUpdateHitbox(MOVABLE_ENTRY *entry);
 int movableLoad();
 int movableGravity(MOVABLE_ENTRY *entry);
+void movableLoop(int layer);
 
 
 #endif

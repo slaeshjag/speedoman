@@ -9,8 +9,10 @@ void stateSplash() {
 void stateMap() {
 	int i;
 
-	for (i = 0; i < s->active_level->layers; i++)
+	for (i = 0; i < s->active_level->layers; i++) {
 		d_tilemap_draw(s->active_level->layer[i].tilemap);
+		movableLoop(i);
+	}
 	return;
 }
 
@@ -32,6 +34,9 @@ int stateHandle() {
 				break;
 			case STATE_SPLASH:
 				break;
+			case STATE_TESTGAME:
+				levelLoad("maps/test.ldmz");
+				movableLoad();
 			default:
 				break;
 		}

@@ -10,37 +10,9 @@ int movableInit() {
 	
 	if (!s->movable.ai || !s->movable.ai_table)
 		return -1;
+	d_stringtable_section_load(s->movable.ai, "INDEX");
 
 	return 0;
-}
-
-
-void movableHitboxLoad(MOVABLE_ENTRY *entry, const char *name) {
-	int i, coords[32*4];
-
-	i = d_util_string_to_int_array(d_stringtable_entry(s->config, name), ",", coords, 32*4);
-
-	for (; i < 32*4; i++)
-		coords[i] = -1;
-	
-	for (i = 0; i < 32; i++) {
-		entry->hitbox[i].x = coords[i*4];
-		entry->hitbox[i].y = coords[i*4 + 1];
-		entry->hitbox[i].w = coords[i*4 + 2];
-		entry->hitbox[i].h = coords[i*4 + 3];
-	}
-
-	return;
-}
-
-
-void movableUpdateHitbox(MOVABLE_ENTRY *entry) {
-	entry->w = entry->hitbox[entry->direction].w;
-	entry->h = entry->hitbox[entry->direction].h;
-	entry->x_off = entry->hitbox[entry->direction].x;
-	entry->y_off = entry->hitbox[entry->direction].y;
-
-	return;
 }
 
 
@@ -52,6 +24,7 @@ int movableLoad() {
 		d_sprite_free(s->movable.movable[i].sprite);
 	if (!(entry = realloc(s->movable.movable, sizeof(MOVABLE_ENTRY) * s->active_level->objects))) {
 		free(s->movable.movable);
+		d_dynlib_close(s->movable.ai);
 		movableInit();
 		return -1;
 	}
@@ -60,14 +33,15 @@ int movableLoad() {
 	s->movable.movables = s->active_level->objects;
 
 	for (i = 0; i < s->movable.movables; i++) {
-		movableHitboxLoad(&s->movable.movable[i], d_map_prop(s->active_level->object[i].ref, "NAME"));
 		s->movable.movable[i].sprite = d_sprite_load(d_map_prop(s->active_level->object[i].ref, "sprite"), 0, DARNIT_PFORMAT_RGB5A1);
 		s->movable.movable[i].ai = d_dynlib_get(s->movable.ai, d_stringtable_entry(s->movable.ai_table, d_map_prop(s->active_level->object[i].ref, "ai")));
-		s->movable.movable[i].x = s->active_level->object[i].x;
-		s->movable.movable[i].y = s->active_level->object[i].y;
+		s->movable.movable[i].x = s->active_level->object[i].x * 1000;
+		s->movable.movable[i].y = s->active_level->object[i].y * 1000;
 		s->movable.movable[i].l = s->active_level->object[i].l;
 		s->movable.movable[i].direction = 0;
-		movableUpdateHitbox(&s->movable.movable[i]);
+		s->movable.movable[i].gravity_effect = 1;
+		s->movable.movable[i].x_velocity = 0;
+		s->movable.movable[i].y_velocity = 0;
 	}
 
 	return 0;
@@ -75,60 +49,104 @@ int movableLoad() {
 
 
 int movableGravity(MOVABLE_ENTRY *entry) {
-	int gravity, delta, xi, dx, yi, dy, i, j, final_y;
-	DARNIT_MAP_LAYER *layer = &s->active_level->layer[entry->l];
+	int gravity;
+	int delta_x, delta_y, r, t, u;
+	int hit_x, hit_y, hit_w, hit_h;
 
+	DARNIT_MAP_LAYER *layer = &(s->active_level->layer[entry->l]);
+
+	d_sprite_hitbox(entry->sprite, &hit_x, &hit_y, &hit_w, &hit_h);
+	hit_w--;
+	hit_h--;
+
+	/* Y-axis */
 	if (entry->gravity_effect == 0)
-		return -1;
-	gravity = (entry->gravity_effect == 2) ? s->cfg.gravity_strong : s->cfg.gravity_weak;
+		gravity = 0;
+	else
+		gravity = (entry->gravity_effect == 2) ? s->cfg.gravity_strong : s->cfg.gravity_weak;
 
-	if (entry->velocity + gravity * d_last_frame_time() > s->cfg.terminal_velocity)
-		entry->velocity = s->cfg.terminal_velocity;
-	delta = (entry->velocity * d_last_frame_time() >> 16);
-	if (delta == 0)
-		return -1;
-	
-	final_y = entry->y + delta;
-	
-	if (delta < 0) {		/* Mkay, we're still moving up */
-		xi = entry->x / layer->tile_w;
-		yi = entry->y / layer->tile_h;
-		dx = (entry->x + entry->w) / layer->tile_w - xi;
-		dy = (entry->h + delta) / layer->tile_h - yi;
-		
-		for (i = -1; i >= dy && (yi + i >= 0); i--) {
-			for (j = 0; j <= dx; j++)
-				if (layer->tilemap->data[xi+j + (yi+i) * layer->tilemap->w] & COLLISION_TOP)
-					break;
-			if (j <= dx) {
-				entry->y = (yi + i + 1) * layer->tile_h;
-				return 0;
+	if (entry->y_velocity + (gravity * d_last_frame_time()) / 1000 > s->cfg.terminal_velocity)
+		entry->y_velocity = s->cfg.terminal_velocity;
+	else
+		entry->y_velocity += gravity * d_last_frame_time() / 1000;
+	delta_y = (entry->y_velocity * d_last_frame_time());
+
+	/* X-axis */
+	delta_x = 0;
+	//final_x = entry->x;
+	/* TODO: STUB */
+
+	while (delta_x || delta_y) {
+		if (!delta_y /*|| (delta_x / (delta_y / 1000) > 1000)*/) {
+		} else {	/* delta_y måste vara != 0 */
+			r = entry->y % 1000;
+			if (r + delta_y < 1000 && r + delta_y >= 0) {
+				entry->y += delta_y;
+				delta_y = 0;
+				continue;
 			}
-			entry->y = (yi + i) * layer->tile_h;
-		}
-		
-		entry->y = final_y;
-		return 0;
-	} else {
-		xi = entry->x / layer->tile_w;
-		yi = (entry->y + entry->h) / layer->tile_h;
-		dx = (entry->x + entry->w) / layer->tile_w - xi;
-		dy = (entry->y + entry->h + delta) / layer->tile_h - yi;
 
-		for (i = 1; i <= dy; i++) {
-			for (j = 0; j <= dx; j++)
-				if (layer->tilemap->data[xi+j + (yi+i) * layer->tilemap->h] & COLLISION_BOTTOM)
-					break;
-			if (j <= dx) {
-				entry->y = (yi + i) * layer->tile_h - entry->h - 1;
-				return 0;
+			if (delta_y > 0) {
+				r = 1000 - r;
+				u = entry->y / 1000 + hit_y + hit_h;
+				t = u + 1;
+				u /= layer->tile_h;
+				t /= layer->tile_h;
+				if (u == t) {
+					entry->y += r;
+					delta_y -= r;
+					continue;
+				}
+
+				if (layer->tilemap->data[t * layer->tilemap->w + entry->x / 1000 / layer->tile_w] & COLLISION_BOTTOM) {
+					entry->y_velocity = 0;
+					delta_y = 0;
+					continue;
+				}
+
+				entry->y += r;
+				delta_y -= r;
+				continue;
+			} else {
+				if (!r)
+					r = 1000;
+				u = entry->y / 1000 + hit_y;
+				t = u - 1;
+				u /= layer->tile_h;
+				t /= layer->tile_h;
+				if (u == t) {
+					entry->y -= r;
+					delta_y += r;
+					continue;
+				}
+
+				if (layer->tilemap->data[t * layer->tilemap->w + entry->x / 1000 / layer->tile_w] & COLLISION_TOP) {
+					entry->y_velocity = 0;
+					delta_y = 0;
+					continue;
+				}
+
+				entry->y -= r;
+				delta_y += r;
+				continue;
 			}
-			entry->y = (yi + i) * layer->tile_h - entry->h - 1;
 		}
-
-		entry->y = final_y;
-		return 0;
 	}
 
 	return -1462573849;
 }
+
+
+void movableLoop(int layer) {
+	int i;
+
+	for (i = 0; i < s->movable.movables; i++) {
+		if (s->movable.movable[i].l != layer)
+			continue;
+		movableGravity(&s->movable.movable[i]);
+		d_sprite_move(s->movable.movable[i].sprite, s->movable.movable[i].x / 1000, s->movable.movable[i].y / 1000);
+		d_sprite_draw(s->movable.movable[i].sprite);
+	}
+}
+
+

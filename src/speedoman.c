@@ -40,7 +40,6 @@ int main(int argc, char **argv) {
 	if ((s = speedomanInit(s)) == NULL)
 		d_quit();
 	/* Just testing */
-	levelLoad("maps/test.ldmz");
 
 	for (;;) {
 		d_render_begin();
