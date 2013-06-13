@@ -12,7 +12,6 @@ SPEEDOMAN *speedomanInit() {
 	if ((s->config = d_stringtable_open("misc/config.ldsz")) == NULL)
 		return NULL;
 	d_stringtable_section_load(s->config, "INDEX");
-	d_stringtable_section_load(s->config, "HITBOX");
 
 	s->cfg.terminal_velocity = atoi(d_stringtable_entry(s->config, "TERMINAL_VELOCITY"));
 	s->cfg.jump_acceleration = atoi(d_stringtable_entry(s->config, "JUMP_ACCELERATION"));
@@ -45,8 +44,8 @@ int main(int argc, char **argv) {
 		d_render_begin();
 		stateHandle(s);
 		keys = d_keys_get();
-		if (keys.x)
-			return 0;
+//		if (keys.x)
+//			return 0;
 		d_render_end();
 		d_loop();
 	}

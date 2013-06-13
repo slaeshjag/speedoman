@@ -10,7 +10,7 @@ int movableInit() {
 	
 	if (!s->movable.ai || !s->movable.ai_table)
 		return -1;
-	d_stringtable_section_load(s->movable.ai, "INDEX");
+	d_stringtable_section_load(s->movable.ai_table, "INDEX");
 
 	return 0;
 }
@@ -48,9 +48,52 @@ int movableLoad() {
 }
 
 
+void movableMoveDo(DARNIT_MAP_LAYER *layer, int *pos, int *delta, int *vel, int space, int col, int hit_off, int vel_r, int i, int i_b) {
+	int u, t, tile_w, tile_h, map_w, i_2;
+	unsigned int *map_d;
+	tile_w = layer->tile_w;
+	tile_h = layer->tile_h;
+	map_w = layer->tilemap->w;
+	map_d = layer->tilemap->data;
+
+	if (!(*delta))
+		return;
+	u = (*pos) / 1000 + hit_off;
+	t = u + (((*delta) > 0) ? 1 : -1);
+
+	if (i < 0) {
+		u /= tile_h;
+		t /= tile_h;
+	} else {
+		u /= tile_w;
+		t /= tile_w;
+	}
+
+	if (u == t) {
+		(*pos) += space;
+		(*delta) -= space;
+		return;
+	}
+
+	i_2 = (i < 0) ? t * map_w + (abs(i) + i_b) / tile_w : ((i + i_b) / tile_h) * map_w + t;
+	i = (i < 0) ? t * map_w + abs(i) / tile_w : (i / tile_h) * map_w + t;
+
+	
+	if (map_d[i] & col || map_d[i_2] & col) {
+		(*vel) = vel_r;
+		(*delta) = 0;
+		return;
+	}
+
+	(*pos) += space;
+	(*delta) -= space;
+	return;
+}
+
+
 int movableGravity(MOVABLE_ENTRY *entry) {
 	int gravity;
-	int delta_x, delta_y, r, t, u;
+	int delta_x, delta_y, r, p;
 	int hit_x, hit_y, hit_w, hit_h;
 
 	DARNIT_MAP_LAYER *layer = &(s->active_level->layer[entry->l]);
@@ -69,15 +112,35 @@ int movableGravity(MOVABLE_ENTRY *entry) {
 		entry->y_velocity = s->cfg.terminal_velocity;
 	else
 		entry->y_velocity += gravity * d_last_frame_time() / 1000;
+	if (!entry->y_velocity && entry->gravity_effect)
+		entry->y_velocity = 1;
 	delta_y = (entry->y_velocity * d_last_frame_time());
 
 	/* X-axis */
-	delta_x = 0;
+	delta_x = entry->x_velocity * d_last_frame_time();
 	//final_x = entry->x;
 	/* TODO: STUB */
 
+	p = delta_x * 1000 / (delta_y ? delta_y : 1);
+
 	while (delta_x || delta_y) {
-		if (!delta_y /*|| (delta_x / (delta_y / 1000) > 1000)*/) {
+		if (delta_x && (!delta_y || delta_x * 1000 / (delta_y ? delta_y : 1) > p)) {
+			r = entry->x % 1000;
+			if (r + delta_x < 1000 && r + delta_x >= 0) {
+				entry->x += delta_x;
+				delta_x = 0;
+				continue;
+			}
+
+			if (delta_x > 0) {
+				r = 1000 - r;
+				movableMoveDo(layer, &entry->x, &delta_x, &entry->x_velocity, r, COLLISION_LEFT, hit_x + hit_w, 0, entry->y / 1000 + hit_y, hit_h);
+			} else {
+				if (!r)
+					r = 1000;
+				r *= -1;
+				movableMoveDo(layer, &entry->x, &delta_x, &entry->x_velocity, r, COLLISION_RIGHT, hit_x, 0, entry->y / 1000 + hit_y, hit_h);
+			}
 		} else {	/* delta_y måste vara != 0 */
 			r = entry->y % 1000;
 			if (r + delta_y < 1000 && r + delta_y >= 0) {
@@ -88,50 +151,16 @@ int movableGravity(MOVABLE_ENTRY *entry) {
 
 			if (delta_y > 0) {
 				r = 1000 - r;
-				u = entry->y / 1000 + hit_y + hit_h;
-				t = u + 1;
-				u /= layer->tile_h;
-				t /= layer->tile_h;
-				if (u == t) {
-					entry->y += r;
-					delta_y -= r;
-					continue;
-				}
-
-				if (layer->tilemap->data[t * layer->tilemap->w + entry->x / 1000 / layer->tile_w] & COLLISION_BOTTOM) {
-					entry->y_velocity = 0;
-					delta_y = 0;
-					continue;
-				}
-
-				entry->y += r;
-				delta_y -= r;
-				continue;
+				movableMoveDo(layer, &entry->y, &delta_y, &entry->y_velocity, r, COLLISION_TOP, hit_y + hit_h, 0, entry->x / -1000 - hit_x, hit_w);
 			} else {
 				if (!r)
 					r = 1000;
-				u = entry->y / 1000 + hit_y;
-				t = u - 1;
-				u /= layer->tile_h;
-				t /= layer->tile_h;
-				if (u == t) {
-					entry->y -= r;
-					delta_y += r;
-					continue;
-				}
-
-				if (layer->tilemap->data[t * layer->tilemap->w + entry->x / 1000 / layer->tile_w] & COLLISION_TOP) {
-					entry->y_velocity = 0;
-					delta_y = 0;
-					continue;
-				}
-
-				entry->y -= r;
-				delta_y += r;
-				continue;
+				r *= -1;
+				movableMoveDo(layer, &entry->y, &delta_y, &entry->y_velocity, r, COLLISION_BOTTOM, hit_y, -1, entry->x / -1000 - hit_x, hit_w);
 			}
 		}
 	}
+
 
 	return -1462573849;
 }
@@ -144,6 +173,8 @@ void movableLoop(int layer) {
 		if (s->movable.movable[i].l != layer)
 			continue;
 		movableGravity(&s->movable.movable[i]);
+		if (s->movable.movable[i].ai)
+			s->movable.movable[i].ai(s, &s->movable.movable[i]);
 		d_sprite_move(s->movable.movable[i].sprite, s->movable.movable[i].x / 1000, s->movable.movable[i].y / 1000);
 		d_sprite_draw(s->movable.movable[i].sprite);
 	}

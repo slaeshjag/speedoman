@@ -11,7 +11,9 @@ void stateMap() {
 
 	for (i = 0; i < s->active_level->layers; i++) {
 		d_tilemap_draw(s->active_level->layer[i].tilemap);
+		d_render_blend_enable();
 		movableLoop(i);
+		d_render_blend_disable();
 	}
 	return;
 }

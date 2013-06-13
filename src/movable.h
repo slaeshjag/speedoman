@@ -31,7 +31,6 @@ typedef struct {
 	int			gravity_effect;
 	int			hp;
 	int			hp_max;
-	MOVABLE_HITBOX		hitbox[32];
 	void			(*ai)(void *s, void *entry);
 } MOVABLE_ENTRY;
 	
@@ -39,7 +38,6 @@ typedef struct {
 typedef struct {
 	MOVABLE_ENTRY		*movable;
 	int			movables;
-	DARNIT_STRINGTABLE	*hitbox_data;
 	DARNIT_DYNLIB		*ai;
 	DARNIT_STRINGTABLE	*ai_table;
 } MOVABLE;

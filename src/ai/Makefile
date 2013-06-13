@@ -1,32 +1,30 @@
 # Project: Speedoman
 include $(TOPDIR)/config.mk
 
+CFLAGS += -fPIC
 SRCFILES=$(wildcard *.c)
 OBJFILES=$(SRCFILES:.c=.o)
-BIN = ../bin/speedoman
+LIB = ai.code
+LDFLAGS += -shared -Wl,-soname,ai.code
 .PHONY: all clean
 
 all: $(OBJFILES) $(DEPENDS)
-	@echo " [ LD ]	$(BIN)"
-	@$(CC) $(OBJFILES) -o $(BIN) $(LDFLAGS)
-	@echo " [ CD ] src/ai"
-	+@make -C ai/
+	@echo " [ LD ]	$(LIB)"
+	@$(CC) $(OBJFILES) -o $(LIB) $(LDFLAGS)
 	@echo " Done."
 	@echo
 
 clean:
 	@echo " [ RM ]	$(OBJFILES)"
-	@echo " [ RM ]	$(BIN)"
+	@echo " [ RM ]	$(LIB)"
 	@$(RM) $(OBJFILES)
-	@$(RM) $(BIN)
-	@echo " [ CD ] src/ai"
-	+@make -C ai/ clean
+	@$(RM) $(LIB)
 	@echo "Done."
 	@echo ""
 
 
 %.o: %.c %.h
-	@echo " [ CC ]	src/$<"
+	@echo " [ CC ]	src/ai/$<"
 	@$(CC) $(CFLAGS) -c -o $@ $< 
 
 #muon.res:
