@@ -20,8 +20,11 @@ int movableLoad() {
 	int i;
 	MOVABLE_ENTRY *entry;
 
-	for (i = 0; i < s->movable.movables; i++)
+	for (i = 0; i < s->movable.movables; i++) {
+		s->movable.movable[i].ai(s, &s->movable.movable[i], MOVABLE_MSG_DESTROY);
 		d_sprite_free(s->movable.movable[i].sprite);
+	}
+
 	if (!(entry = realloc(s->movable.movable, sizeof(MOVABLE_ENTRY) * s->active_level->objects))) {
 		free(s->movable.movable);
 		d_dynlib_close(s->movable.ai);
@@ -34,6 +37,7 @@ int movableLoad() {
 
 	for (i = 0; i < s->movable.movables; i++) {
 		s->movable.movable[i].sprite = d_sprite_load(d_map_prop(s->active_level->object[i].ref, "sprite"), 0, DARNIT_PFORMAT_RGB5A1);
+		d_sprite_animate_start(s->movable.movable[i].sprite);
 		s->movable.movable[i].ai = d_dynlib_get(s->movable.ai, d_stringtable_entry(s->movable.ai_table, d_map_prop(s->active_level->object[i].ref, "ai")));
 		s->movable.movable[i].x = s->active_level->object[i].x * 1000;
 		s->movable.movable[i].y = s->active_level->object[i].y * 1000;
@@ -42,6 +46,7 @@ int movableLoad() {
 		s->movable.movable[i].gravity_effect = 1;
 		s->movable.movable[i].x_velocity = 0;
 		s->movable.movable[i].y_velocity = 0;
+		s->movable.movable[i].ai(s, &s->movable.movable[i], MOVABLE_MSG_INIT);
 	}
 
 	return 0;
@@ -174,7 +179,7 @@ void movableLoop(int layer) {
 			continue;
 		movableGravity(&s->movable.movable[i]);
 		if (s->movable.movable[i].ai)
-			s->movable.movable[i].ai(s, &s->movable.movable[i]);
+			s->movable.movable[i].ai(s, &s->movable.movable[i], MOVABLE_MSG_LOOP);
 		d_sprite_move(s->movable.movable[i].sprite, s->movable.movable[i].x / 1000, s->movable.movable[i].y / 1000);
 		d_sprite_draw(s->movable.movable[i].sprite);
 	}

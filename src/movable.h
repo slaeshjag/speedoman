@@ -7,6 +7,14 @@
 #define	COLLISION_RIGHT		0x80000
 
 
+typedef enum {
+	MOVABLE_MSG_INIT,
+	MOVABLE_MSG_LOOP,
+	MOVABLE_MSG_COLLISION,
+	MOVABLE_MSG_DESTROY
+} MOVABLE_MSG;
+
+
 typedef struct {
 	int			x;
 	int			y;
@@ -31,7 +39,7 @@ typedef struct {
 	int			gravity_effect;
 	int			hp;
 	int			hp_max;
-	void			(*ai)(void *s, void *entry);
+	void			(*ai)(void *s, void *entry, MOVABLE_MSG msg);
 } MOVABLE_ENTRY;
 	
 

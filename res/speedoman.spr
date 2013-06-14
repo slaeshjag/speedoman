@@ -16,10 +16,10 @@ E
 
 # running left
 D
-T 100 10
-T 100 11
-T 100 12
-T 100 11
+T 200 10
+T 200 11
+T 200 12
+T 200 11
 E
 
 #running right

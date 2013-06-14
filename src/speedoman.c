@@ -26,8 +26,6 @@ SPEEDOMAN *speedomanInit() {
 
 
 int main(int argc, char **argv) {
-	DARNIT_KEYS keys;
-
 	if (d_init("Speedoman", "speedoman", NULL) == NULL)
 		return -1;
 	
@@ -43,9 +41,6 @@ int main(int argc, char **argv) {
 	for (;;) {
 		d_render_begin();
 		stateHandle(s);
-		keys = d_keys_get();
-//		if (keys.x)
-//			return 0;
 		d_render_end();
 		d_loop();
 	}
