@@ -8,13 +8,21 @@ void stateSplash() {
 
 void stateMap() {
 	int i;
+	
+	movableLoop();
+	cameraLoop();
 
 	for (i = 0; i < s->active_level->layers; i++) {
+		d_tilemap_camera_move(s->active_level->layer[i].tilemap, s->camera.x, s->camera.y);
 		d_tilemap_draw(s->active_level->layer[i].tilemap);
+		d_render_offset(s->camera.x, s->camera.y);
 		d_render_blend_enable();
-		movableLoop(i);
+		movableLoopRender(i);
 		d_render_blend_disable();
+		d_render_offset(0, 0);
 	}
+
+
 	return;
 }
 
@@ -37,6 +45,7 @@ int stateHandle() {
 			case STATE_SPLASH:
 				break;
 			case STATE_TESTGAME:
+				cameraInit();
 				levelLoad("maps/test.ldmz");
 				movableLoad();
 			default:

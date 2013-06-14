@@ -16,6 +16,7 @@ E
 
 # running left
 D
+H 15 17 20 31
 T 200 10
 T 200 11
 T 200 12
@@ -24,6 +25,7 @@ E
 
 #running right
 D
+H 15 17 20 31
 T 200 13
 T 200 14
 T 200 15

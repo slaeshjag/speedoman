@@ -3,6 +3,8 @@
 
 int movableInit() {
 	s->movable.movable = NULL;
+	s->movable.coll_buf = NULL;
+	s->movable.bbox = NULL;
 	s->movable.movables = 0;
 
 	s->movable.ai = d_dynlib_open(d_stringtable_entry(s->config, "AI_LIB"));
@@ -17,7 +19,7 @@ int movableInit() {
 
 
 int movableLoad() {
-	int i;
+	int i, h_x, h_y, h_w, h_h;
 	MOVABLE_ENTRY *entry;
 
 	for (i = 0; i < s->movable.movables; i++) {
@@ -27,6 +29,8 @@ int movableLoad() {
 
 	if (!(entry = realloc(s->movable.movable, sizeof(MOVABLE_ENTRY) * s->active_level->objects))) {
 		free(s->movable.movable);
+		free(s->movable.coll_buf);
+		d_bbox_free(s->movable.bbox);
 		d_dynlib_close(s->movable.ai);
 		movableInit();
 		return -1;
@@ -34,6 +38,8 @@ int movableLoad() {
 
 	s->movable.movable = entry;
 	s->movable.movables = s->active_level->objects;
+	s->movable.coll_buf = malloc(sizeof(int) * s->active_level->objects);
+	s->movable.bbox = d_bbox_new(s->movable.movables);
 
 	for (i = 0; i < s->movable.movables; i++) {
 		s->movable.movable[i].sprite = d_sprite_load(d_map_prop(s->active_level->object[i].ref, "sprite"), 0, DARNIT_PFORMAT_RGB5A1);
@@ -43,10 +49,12 @@ int movableLoad() {
 		s->movable.movable[i].y = s->active_level->object[i].y * 1000;
 		s->movable.movable[i].l = s->active_level->object[i].l;
 		s->movable.movable[i].direction = 0;
-		s->movable.movable[i].gravity_effect = 1;
+		s->movable.movable[i].gravity_effect = 0;
 		s->movable.movable[i].x_velocity = 0;
 		s->movable.movable[i].y_velocity = 0;
 		s->movable.movable[i].ai(s, &s->movable.movable[i], MOVABLE_MSG_INIT);
+		d_sprite_hitbox(s->movable.movable[i].sprite, &h_x, &h_y, &h_w, &h_h);
+		d_bbox_add(s->movable.bbox, s->movable.movable[i].x / 1000 + h_x, s->movable.movable[i].x / 1000 + h_x, h_w, h_h);
 	}
 
 	return 0;
@@ -82,7 +90,6 @@ void movableMoveDo(DARNIT_MAP_LAYER *layer, int *pos, int *delta, int *vel, int 
 
 	i_2 = (i < 0) ? t * map_w + (abs(i) + i_b) / tile_w : ((i + i_b) / tile_h) * map_w + t;
 	i = (i < 0) ? t * map_w + abs(i) / tile_w : (i / tile_h) * map_w + t;
-
 	
 	if (map_d[i] & col || map_d[i_2] & col) {
 		(*vel) = vel_r;
@@ -171,18 +178,33 @@ int movableGravity(MOVABLE_ENTRY *entry) {
 }
 
 
-void movableLoop(int layer) {
-	int i;
+void movableLoop() {
+	int i, j, h_x, h_y, h_w, h_h, res;
 
-	for (i = 0; i < s->movable.movables; i++) {
-		if (s->movable.movable[i].l != layer)
-			continue;
-		movableGravity(&s->movable.movable[i]);
+	res = d_bbox_test(s->movable.bbox, s->camera.x - 128, s->camera.y - 128, s->var.screen_w + 256, s->var.screen_h + 256, s->movable.coll_buf, ~0);
+
+	for (j = 0; j < res; j++) {
+		i = s->movable.coll_buf[j];
 		if (s->movable.movable[i].ai)
 			s->movable.movable[i].ai(s, &s->movable.movable[i], MOVABLE_MSG_LOOP);
+		movableGravity(&s->movable.movable[i]);
 		d_sprite_move(s->movable.movable[i].sprite, s->movable.movable[i].x / 1000, s->movable.movable[i].y / 1000);
-		d_sprite_draw(s->movable.movable[i].sprite);
+		d_sprite_hitbox(s->movable.movable[i].sprite, &h_x, &h_y, &h_w, &h_h);
+		d_bbox_move(s->movable.bbox, i, s->movable.movable[i].x / 1000 + h_x, s->movable.movable[i].y / 1000 + h_y);
+		d_bbox_resize(s->movable.bbox, i, h_w, h_h);
 	}
+
 }
 
 
+void movableLoopRender(int layer) {
+	int i, res;
+
+	res = d_bbox_test(s->movable.bbox, s->camera.x - 128, s->camera.y - 128, s->var.screen_w + 256, s->var.screen_h + 256, s->movable.coll_buf, ~0);
+
+	for (i = 0; i < res; i++) {
+		if (s->movable.movable[s->movable.coll_buf[i]].l != layer)
+			continue;
+		d_sprite_draw(s->movable.movable[s->movable.coll_buf[i]].sprite);
+	}
+}

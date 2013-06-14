@@ -45,6 +45,8 @@ typedef struct {
 
 typedef struct {
 	MOVABLE_ENTRY		*movable;
+	unsigned int		*coll_buf;
+	DARNIT_BBOX		*bbox;
 	int			movables;
 	DARNIT_DYNLIB		*ai;
 	DARNIT_STRINGTABLE	*ai_table;
@@ -53,7 +55,8 @@ typedef struct {
 int movableInit();
 int movableLoad();
 int movableGravity(MOVABLE_ENTRY *entry);
-void movableLoop(int layer);
+void movableLoop();
+void movableLoopRender(int layer);
 
 
 #endif

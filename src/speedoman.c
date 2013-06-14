@@ -17,9 +17,15 @@ SPEEDOMAN *speedomanInit() {
 	s->cfg.jump_acceleration = atoi(d_stringtable_entry(s->config, "JUMP_ACCELERATION"));
 	s->cfg.gravity_strong = atoi(d_stringtable_entry(s->config, "GRAVITY_STRONG"));
 	s->cfg.gravity_weak = atoi(d_stringtable_entry(s->config, "GRAVITY_WEAK"));
+	s->cfg.speedoman_walk_speed = atoi(d_stringtable_entry(s->config, "SPEEDOMAN_WALK_SPEED"));
+
+	s->var.screen_w = 800;
+	s->var.screen_h = 480;
 	
 	s->active_level = NULL;
+	s->var.camera_follow = cameraMovableFollow;
 	movableInit();
+	cameraInit();
 
 	return s;
 }

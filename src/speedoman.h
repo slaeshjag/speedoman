@@ -11,6 +11,7 @@
 #include "state.h"
 #include "movable.h"
 #include "level.h"
+#include "camera.h"
 
 
 typedef struct {
@@ -18,7 +19,16 @@ typedef struct {
 	int			jump_acceleration;
 	int			gravity_strong;
 	int			gravity_weak;
+	int			speedoman_walk_speed;
 } CONFIG;
+
+
+typedef struct {
+	int			screen_w;
+	int			screen_h;
+	void			(*camera_follow)(MOVABLE_ENTRY *e);
+	void			(*camera_loop)();
+} VAR;
 
 
 typedef struct {
@@ -26,8 +36,11 @@ typedef struct {
 	DARNIT_MAP		*active_level;
 	DARNIT_STRINGTABLE	*config;
 	CONFIG			cfg;
+	CAMERA			camera;
+	VAR			var;
 	int			state;
 	int			newstate;
+	int			player;
 } SPEEDOMAN;
 
 SPEEDOMAN *s;		/* Just this one, promise :x */
