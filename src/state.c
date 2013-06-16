@@ -11,6 +11,7 @@ void stateMap() {
 	
 	movableLoop();
 	cameraLoop();
+	bulletLoop();
 
 	for (i = 0; i < s->active_level->layers; i++) {
 		d_tilemap_camera_move(s->active_level->layer[i].tilemap, s->camera.x, s->camera.y);
@@ -21,6 +22,10 @@ void stateMap() {
 		d_render_blend_disable();
 		d_render_offset(0, 0);
 	}
+
+	d_render_blend_enable();
+	bulletDraw();
+	d_render_blend_disable();
 
 
 	return;

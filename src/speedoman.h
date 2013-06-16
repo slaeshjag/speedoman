@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 #include <darnit/darnit.h>
 
@@ -12,6 +13,7 @@
 #include "movable.h"
 #include "level.h"
 #include "camera.h"
+#include "bullet.h"
 
 
 typedef struct {
@@ -27,7 +29,7 @@ typedef struct {
 	int			screen_w;
 	int			screen_h;
 	void			(*camera_follow)(MOVABLE_ENTRY *e);
-	void			(*camera_loop)();
+	void			(*bullet_spawn)(int type, int direction, MOVABLE_ENTRY *owner_e, int x, int y);
 } VAR;
 
 
@@ -38,6 +40,7 @@ typedef struct {
 	CONFIG			cfg;
 	CAMERA			camera;
 	VAR			var;
+	BULLET			bullet;
 	int			state;
 	int			newstate;
 	int			player;

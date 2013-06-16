@@ -24,6 +24,8 @@ SPEEDOMAN *speedomanInit() {
 	
 	s->active_level = NULL;
 	s->var.camera_follow = cameraMovableFollow;
+	s->var.bullet_spawn = bulletSpawn;
+	bulletInit();
 	movableInit();
 	cameraInit();
 

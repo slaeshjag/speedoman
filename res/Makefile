@@ -17,6 +17,7 @@ default:
 	@mkdir -p assets
 	@cp *.png assets
 	@cp *.spr assets
+	@cp *.lst assets
 	@darnit-fsimage assets ../bin/assets.ldi
 	@rm -Rf assets
 clean:
