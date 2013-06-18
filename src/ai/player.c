@@ -1,6 +1,10 @@
 #include "ai.h"
 #include "player.h"
 
+static int ypos_delta[] = {
+	-15, -15, -15, -15
+};
+
 
 int playerDirection(MOVABLE_ENTRY *p_e) {
 	if (p.sliding)
@@ -23,21 +27,10 @@ void playerShoot(SPEEDOMAN *s, MOVABLE_ENTRY *self) {
 	y_pos = self->y / 1000;
 
 	dir = playerDirection(self);
-	switch (dir) {
-		case 0:
-		case 1:
-		case 2:
-		case 3:
-			y_pos += (d_sprite_height(self->sprite) - 15);
-			break;
-		default:
-			break;
-	}
+	y_pos += (d_sprite_height(self->sprite) + ypos_delta[dir]);
 
 	if (dir & 1)
 		x_pos += hit_w;
-//	elsie
-//		x_pos -= s->bullet.type[0].w;
 
 	s->var.bullet_spawn(0, (dir & 1) ? 1 : -1, self, x_pos, y_pos);
 
@@ -45,17 +38,28 @@ void playerShoot(SPEEDOMAN *s, MOVABLE_ENTRY *self) {
 }
 
 
+void playerHit(MOVABLE_ENTRY *self, int hp) {
+	self->hit = 1;
+	self->hit_time = 1000;
+	self->hp -= hp;
+
+	return;
+}
+
 
 void playerCollisionCheck(SPEEDOMAN *s, MOVABLE_ENTRY *self) {
 	int box_x, box_y, box_w, box_h, i, match;
+	
+	if (self->hit)
+		return;
 
 	d_sprite_hitbox(self->sprite, &box_x, &box_y, &box_w, &box_h);
 	match = d_bbox_test(s->movable.bbox, self->x/1000 + box_x, self->y/1000 + box_y, box_w, box_h, p.coll_test, ~0);
 
-	for (i = 0; i < match; i++) {
+	for (i = 0; i < match && !self->hit; i++) {
 		if (&s->movable.movable[p.coll_test[i]] == self)
 			continue;
-		/* TODO: Implement health deduction on collision */
+		playerHit(self, s->movable.movable[p.coll_test[i]].touch_dmg);
 	}
 
 	return;
@@ -72,6 +76,10 @@ void player(SPEEDOMAN *s, MOVABLE_ENTRY *self, MOVABLE_MSG msg) {
 			p.last_walk_dir = 1;
 			self->gravity_effect = 1;
 			s->var.camera_follow(self);
+			self->hp_max = s->cfg.speedoman_hp;
+			self->hp = s->cfg.speedoman_hp;
+			self->hit = 0;
+			self->type = 0;
 			p.coll_test = malloc(s->movable.movables * sizeof(int));
 			break;
 		case MOVABLE_MSG_LOOP:
@@ -87,6 +95,12 @@ void player(SPEEDOMAN *s, MOVABLE_ENTRY *self, MOVABLE_MSG msg) {
 				self->x_velocity = s->cfg.speedoman_walk_speed;
 			} else if (!p.sliding)
 				self->x_velocity = 0;
+			if (self->hit) {
+				self->hit_time -= d_last_frame_time();
+				if (self->hit_time <= 0)
+					self->hit_time = (self->hit = 0) - 1;
+			}
+
 			playerCollisionCheck(s, self);
 
 			if (d_keys_get().l) {

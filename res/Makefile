@@ -18,6 +18,7 @@ default:
 	@cp *.png assets
 	@cp *.spr assets
 	@cp *.lst assets
+	@cp *.dmg assets
 	@darnit-fsimage assets ../bin/assets.ldi
 	@rm -Rf assets
 clean:

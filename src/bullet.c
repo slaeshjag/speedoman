@@ -12,6 +12,8 @@ void bulletLoadTypes() {
 	for (i = 0; !d_file_eof(f); i++) {
 		s->bullet.type = realloc(s->bullet.type, (i + 1) * sizeof(BULLET_TYPE));
 		d_file_gets(buff, 2048, f);
+		if (!strlen(buff))
+			break;
 		d_util_string_to_int_array(buff, " ", num, 7);
 		s->bullet.type[i].x_pos = num[0];
 		s->bullet.type[i].y_pos = num[1];
@@ -20,9 +22,18 @@ void bulletLoadTypes() {
 		s->bullet.type[i].x_speed = num[4];
 		s->bullet.type[i].y_speed = num[5];
 		s->bullet.type[i].life = num[6];
-		d_file_eof(f);
 	}
-	
+
+	s->bullet.types = i;
+	d_file_close(f);
+
+	f = d_file_open("assets/bullets.dmg", "rb");
+	s->bullet.dmg = malloc(sizeof(int) * i * i);
+	for (i = 0; i < s->bullet.types; i++) {
+		d_file_gets(buff, 2048, f);
+		d_util_string_to_int_array(buff, " ", s->bullet.dmg, s->bullet.types);
+	}
+
 	d_file_close(f);
 
 	return;
@@ -51,6 +62,16 @@ void bulletInit() {
 }
 
 
+void bulletDelete(int i) {
+	d_bbox_delete(s->bullet.bbox, i);
+	d_render_tile_move(s->bullet.tc, i, INT_MAX, INT_MAX);
+	s->bullet.b[i].x = INT_MAX;
+	s->bullet.b[i].y = INT_MAX;
+
+	return;
+}
+
+
 void bulletLoop() {
 	int i, dx;
 
@@ -60,16 +81,13 @@ void bulletLoop() {
 		dx = s->bullet.b[i].x_vel * d_last_frame_time();
 		s->bullet.b[i].life -= d_last_frame_time();
 		if (s->bullet.b[i].life <= 0) {
-			d_bbox_delete(s->bullet.bbox, i);
-			d_render_tile_move(s->bullet.tc, i, INT_MAX, INT_MAX);
-			s->bullet.b[i].x = INT_MAX;
-			s->bullet.b[i].y = INT_MAX;
+			bulletDelete(i);
 			dx = 0;
 		} else {
 			s->bullet.b[i].x += dx;
 			d_render_tile_move(s->bullet.tc, i, s->bullet.b[i].x / 1000, s->bullet.b[i].y / 1000);
 			d_bbox_move(s->bullet.bbox, i, (s->bullet.b[i].x) / 1000, s->bullet.b[i].y / 1000);
-			d_bbox_resize(s->bullet.bbox, i, abs(dx) + s->bullet.type[s->bullet.b[i].type].w, s->bullet.type[s->bullet.b[i].type].h);
+			d_bbox_resize(s->bullet.bbox, i, abs(dx/1000) + s->bullet.type[s->bullet.b[i].type].w, s->bullet.type[s->bullet.b[i].type].h);
 		}
 
 		d_render_tile_size_set(s->bullet.tc, i, s->bullet.type[s->bullet.b[i].type].w, s->bullet.type[s->bullet.b[i].type].h);
@@ -116,6 +134,33 @@ void bulletOrphan(int owner) {
 	for (i = 0; i < BULLET_CAP; i++)
 		if (s->bullet.b[i].owner == owner)
 			s->bullet.b[i].owner = -1;
+
+	return;
+}
+
+
+void bulletTest(MOVABLE_ENTRY *entry) {
+	int box_x, box_y, box_w, box_h, i, res, hit;
+
+	d_sprite_hitbox(entry->sprite, &box_x, &box_y, &box_w, &box_h);
+	box_x += (entry->x / 1000);
+	box_y += (entry->y / 1000);
+
+	res = d_bbox_test(s->bullet.bbox, box_x, box_y, box_w, box_h, s->bullet.btest, BULLET_CAP);
+
+	for (i = 0, hit = -1; i < res; i++) {
+		if (&s->movable.movable[s->bullet.b[s->bullet.btest[i]].owner] == entry)
+			continue;
+		hit = s->bullet.b[s->bullet.btest[i]].type;
+		bulletDelete(s->bullet.btest[i]);
+	}
+
+	if (!entry->hit && hit > -1) {
+		fprintf(stderr, "Had %i hp, subtracting %i (%i)\n", entry->hp, s->bullet.dmg[s->bullet.types * entry->type + hit], s->bullet.types * entry->type + hit);
+		entry->hp -= s->bullet.dmg[s->bullet.types * entry->type + hit];
+		entry->hit = 1;
+		/* TODO: Insert sound effect playback thing */
+	}
 
 	return;
 }

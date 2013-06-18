@@ -18,6 +18,7 @@ SPEEDOMAN *speedomanInit() {
 	s->cfg.gravity_strong = atoi(d_stringtable_entry(s->config, "GRAVITY_STRONG"));
 	s->cfg.gravity_weak = atoi(d_stringtable_entry(s->config, "GRAVITY_WEAK"));
 	s->cfg.speedoman_walk_speed = atoi(d_stringtable_entry(s->config, "SPEEDOMAN_WALK_SPEED"));
+	s->cfg.speedoman_hp = atoi(d_stringtable_entry(s->config, "SPEEDOMAN_HP"));
 
 	s->var.screen_w = 800;
 	s->var.screen_h = 480;

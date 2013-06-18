@@ -192,6 +192,11 @@ void movableLoop() {
 		d_sprite_hitbox(s->movable.movable[i].sprite, &h_x, &h_y, &h_w, &h_h);
 		d_bbox_move(s->movable.bbox, i, s->movable.movable[i].x / 1000 + h_x, s->movable.movable[i].y / 1000 + h_y);
 		d_bbox_resize(s->movable.bbox, i, h_w, h_h);
+		bulletTest(&s->movable.movable[i]);
+		if (s->movable.movable[i].hp <= 0) {
+			d_bbox_delete(s->movable.bbox, i);
+			/* TODO: Make it play some sound effect here */
+		}
 	}
 
 }

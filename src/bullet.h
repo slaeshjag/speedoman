@@ -35,6 +35,7 @@ typedef struct {
 	unsigned int		*btest;
 	BULLET_TYPE		*type;
 	int			types;
+	int			*dmg;
 } BULLET;
 
 
@@ -44,6 +45,7 @@ void bulletLoop();
 void bulletDraw();
 void bulletSpawn(int type, int direction, MOVABLE_ENTRY *owner_e, int x, int y);
 void bulletOrphan(int owner);
+void bulletTest(MOVABLE_ENTRY *movable);
 
 
 #endif

@@ -22,6 +22,7 @@ typedef struct {
 	int			gravity_strong;
 	int			gravity_weak;
 	int			speedoman_walk_speed;
+	int			speedoman_hp;
 } CONFIG;
 
 

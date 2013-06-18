@@ -39,6 +39,10 @@ typedef struct {
 	int			gravity_effect;
 	int			hp;
 	int			hp_max;
+	int			hit;
+	int			hit_time;
+	int			type;
+	int			touch_dmg;
 	void			(*ai)(void *s, void *entry, MOVABLE_MSG msg);
 } MOVABLE_ENTRY;
 	
