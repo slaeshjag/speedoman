@@ -80,6 +80,7 @@ void player(SPEEDOMAN *s, MOVABLE_ENTRY *self, MOVABLE_MSG msg) {
 			self->hp = s->cfg.speedoman_hp;
 			self->hit = 0;
 			self->type = 0;
+			s->var.meter_watch(s->var.meter.player_health, 1, &self->hp, self->hp_max);
 			p.coll_test = malloc(s->movable.movables * sizeof(int));
 			break;
 		case MOVABLE_MSG_LOOP:
@@ -110,6 +111,7 @@ void player(SPEEDOMAN *s, MOVABLE_ENTRY *self, MOVABLE_MSG msg) {
 			}
 			break;
 		case MOVABLE_MSG_DESTROY:
+			s->var.meter_watch(s->var.meter.player_health, 0, NULL, 1);
 			free(p.coll_test);
 		default:
 			break;

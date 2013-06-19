@@ -26,6 +26,7 @@ void stateMap() {
 	d_render_blend_enable();
 	bulletDraw();
 	d_render_blend_disable();
+	meterDrawAll();
 
 
 	return;

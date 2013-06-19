@@ -156,7 +156,6 @@ void bulletTest(MOVABLE_ENTRY *entry) {
 	}
 
 	if (!entry->hit && hit > -1) {
-		fprintf(stderr, "Had %i hp, subtracting %i (%i)\n", entry->hp, s->bullet.dmg[s->bullet.types * entry->type + hit], s->bullet.types * entry->type + hit);
 		entry->hp -= s->bullet.dmg[s->bullet.types * entry->type + hit];
 		entry->hit = 1;
 		/* TODO: Insert sound effect playback thing */

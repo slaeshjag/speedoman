@@ -14,6 +14,7 @@
 #include "level.h"
 #include "camera.h"
 #include "bullet.h"
+#include "meter.h"
 
 
 typedef struct {
@@ -27,10 +28,21 @@ typedef struct {
 
 
 typedef struct {
+	METER			*player_health;
+	METER			*player_weapon;
+	METER			*boss_health;
+	DARNIT_TILESHEET	*ts;
+} METER_STRUCT;
+	
+
+
+typedef struct {
 	int			screen_w;
 	int			screen_h;
+	METER_STRUCT		meter;
 	void			(*camera_follow)(MOVABLE_ENTRY *e);
 	void			(*bullet_spawn)(int type, int direction, MOVABLE_ENTRY *owner_e, int x, int y);
+	void			(*meter_watch)(METER *m, int type, int *watch, int max);
 } VAR;
 
 
