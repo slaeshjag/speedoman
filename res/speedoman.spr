@@ -1,20 +1,20 @@
 assets/speedoman.png 48 48
 
-# idle, looking left
+# idle, looking left (0)
 D
 H 15 17 20 31
 T 4000 0
 T 200 1
 E
 
-# idle, looking right
+# idle, looking right (1)
 D 
 H 15 17 20 31
 T 4000 3
 T 200 4
 E
 
-# running left
+# running left (2)
 D
 H 15 17 20 31
 T 200 10
@@ -23,11 +23,59 @@ T 200 12
 T 200 11
 E
 
-#running right
+#running right (3)
 D
 H 15 17 20 31
 T 200 13
 T 200 14
 T 200 15
 T 200 14
+E
+
+
+#running and shooting, left (4)
+D
+H 18 19 16 29
+T 200 20
+T 200 21
+T 200 22
+T 200 21
+E
+
+
+#running and shooting, right (5)
+D
+H 18 19 16 29
+T 200 23
+T 200 24
+T 200 25
+T 200 24
+E
+
+
+#jumping left (6)
+D
+H 17 7 14 38
+T 200 30
+E
+
+
+#jumping right (7)
+D
+H 17 7 14 38
+T 200 35
+E
+
+
+#standing, shooting left (8)
+D 
+H 15 17 20 31
+T 200 31
+E
+
+
+#standing, shooting right (9)
+D 
+H 15 17 20 31
+T 200 34
 E

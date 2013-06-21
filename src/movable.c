@@ -104,7 +104,7 @@ void movableMoveDo(DARNIT_MAP_LAYER *layer, int *pos, int *delta, int *vel, int 
 
 
 int movableGravity(MOVABLE_ENTRY *entry) {
-	int gravity;
+	int gravity, hack;
 	int delta_x, delta_y, r, p;
 	int hit_x, hit_y, hit_w, hit_h;
 
@@ -120,6 +120,7 @@ int movableGravity(MOVABLE_ENTRY *entry) {
 	else
 		gravity = (entry->gravity_effect == 2) ? s->cfg.gravity_strong : s->cfg.gravity_weak;
 
+	hack = entry->y_velocity;
 	if (entry->y_velocity + (gravity * d_last_frame_time()) / 1000 > s->cfg.terminal_velocity)
 		entry->y_velocity = s->cfg.terminal_velocity;
 	else
@@ -127,6 +128,8 @@ int movableGravity(MOVABLE_ENTRY *entry) {
 	if (!entry->y_velocity && entry->gravity_effect)
 		entry->y_velocity = 1;
 	delta_y = (entry->y_velocity * d_last_frame_time());
+	if (delta_y >= 1000 || delta_y < 0)
+		hack = entry->y_velocity;
 
 	/* X-axis */
 	delta_x = entry->x_velocity * d_last_frame_time();
@@ -158,6 +161,8 @@ int movableGravity(MOVABLE_ENTRY *entry) {
 			if (r + delta_y < 1000 && r + delta_y >= 0) {
 				entry->y += delta_y;
 				delta_y = 0;
+				if (!hack)
+					entry->y_velocity = hack;
 				continue;
 			}
 
