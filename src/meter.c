@@ -38,11 +38,11 @@ void meterUpdate(METER *m) {
 	pos = *m->watch * m->h / m->watch_max;
 	m->watch_last = *m->watch;
 	d_render_tile_move(m->tc, 1, m->x, m->y + (m->h - pos));
-	d_render_tile_size_set(m->tc, 1, m->w, m->h - pos);
+	d_render_tile_size_set(m->tc, 1, m->w, pos);
 	d_render_tile_tilesheet_coord_set(m->tc, 1, m->w * m->type, 0, m->w, pos);
 	
 	d_render_tile_size_set(m->tc, 0, m->w, m->h - pos);
-	d_render_tile_tilesheet_coord_set(m->tc, 0, 0, 0, m->w, pos);
+	d_render_tile_tilesheet_coord_set(m->tc, 0, 0, 0, m->w, m->h - pos);
 
 	return;
 }
