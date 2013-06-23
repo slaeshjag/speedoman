@@ -18,14 +18,37 @@ int movableInit() {
 }
 
 
-int movableLoad() {
+void movableSpawn() {
 	int i, h_x, h_y, h_w, h_h;
-	MOVABLE_ENTRY *entry;
 
 	for (i = 0; i < s->movable.movables; i++) {
-		s->movable.movable[i].ai(s, &s->movable.movable[i], MOVABLE_MSG_DESTROY);
-		d_sprite_free(s->movable.movable[i].sprite);
+		d_sprite_direction_set(s->movable.movable[i].sprite, 0);
+		s->movable.movable[i].ai = d_dynlib_get(s->movable.ai, d_stringtable_entry(s->movable.ai_table, d_map_prop(s->active_level->object[i].ref, "ai")));
+		s->movable.movable[i].x = s->active_level->object[i].x * 1000;
+		s->movable.movable[i].y = s->active_level->object[i].y * 1000;
+		s->movable.movable[i].l = s->active_level->object[i].l;
+		s->movable.movable[i].direction = 0;
+		s->movable.movable[i].gravity_effect = 0;
+		s->movable.movable[i].x_velocity = 0;
+		s->movable.movable[i].y_velocity = 1;
+		d_sprite_hitbox(s->movable.movable[i].sprite, &h_x, &h_y, &h_w, &h_h);
+		d_bbox_add(s->movable.bbox, s->movable.movable[i].x / 1000 + h_x, s->movable.movable[i].x / 1000 + h_x, h_w, h_h);
+		if (s->movable.movable[i].ai)
+			s->movable.movable[i].ai(s, &s->movable.movable[i], MOVABLE_MSG_INIT);
 	}
+
+	return;
+}
+
+
+int movableLoad() {
+	int i;
+	MOVABLE_ENTRY *entry;
+
+	movableKillEmAll();
+
+	for (i = 0; i < s->movable.movables; i++)
+		d_sprite_free(s->movable.movable[i].sprite);
 
 	if (!(entry = realloc(s->movable.movable, sizeof(MOVABLE_ENTRY) * s->active_level->objects))) {
 		free(s->movable.movable);
@@ -44,20 +67,35 @@ int movableLoad() {
 	for (i = 0; i < s->movable.movables; i++) {
 		s->movable.movable[i].sprite = d_sprite_load(d_map_prop(s->active_level->object[i].ref, "sprite"), 0, DARNIT_PFORMAT_RGB5A1);
 		d_sprite_animate_start(s->movable.movable[i].sprite);
-		s->movable.movable[i].ai = d_dynlib_get(s->movable.ai, d_stringtable_entry(s->movable.ai_table, d_map_prop(s->active_level->object[i].ref, "ai")));
-		s->movable.movable[i].x = s->active_level->object[i].x * 1000;
-		s->movable.movable[i].y = s->active_level->object[i].y * 1000;
-		s->movable.movable[i].l = s->active_level->object[i].l;
-		s->movable.movable[i].direction = 0;
-		s->movable.movable[i].gravity_effect = 0;
-		s->movable.movable[i].x_velocity = 0;
-		s->movable.movable[i].y_velocity = 0;
-		s->movable.movable[i].ai(s, &s->movable.movable[i], MOVABLE_MSG_INIT);
-		d_sprite_hitbox(s->movable.movable[i].sprite, &h_x, &h_y, &h_w, &h_h);
-		d_bbox_add(s->movable.bbox, s->movable.movable[i].x / 1000 + h_x, s->movable.movable[i].x / 1000 + h_x, h_w, h_h);
 	}
+	
+	movableSpawn();
 
 	return 0;
+}
+
+
+/* NOTE: An award of one strawberry goes to whoever can guess who suggested this at the function suffix */
+void movableKillEmAll() {
+	int i;
+
+	for (i = 0; i < s->movable.movables; i++) {
+		if (!s->movable.movable[i].ai)
+			continue;
+		s->movable.movable[i].ai(s, &s->movable.movable[i], MOVABLE_MSG_DESTROY);
+	}
+
+	d_bbox_clear(s->movable.bbox);
+
+	return;
+}
+
+
+void movableRespawn() {
+	movableKillEmAll();
+	movableSpawn();
+
+	return;
 }
 
 
@@ -203,6 +241,9 @@ void movableLoop() {
 			/* TODO: Make it play some sound effect here */
 		}
 	}
+
+	if (s->movable.movable[s->player].hp <= 0)
+		movableRespawn();
 
 }
 

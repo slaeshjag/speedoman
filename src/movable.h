@@ -58,6 +58,8 @@ typedef struct {
 
 int movableInit();
 int movableLoad();
+void movableSpawn();
+void movableKillEmAll();
 int movableGravity(MOVABLE_ENTRY *entry);
 void movableLoop();
 void movableLoopRender(int layer);
