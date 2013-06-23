@@ -41,9 +41,10 @@ int main(int argc, char **argv) {
 	if (d_init("Speedoman", "speedoman", NULL) == NULL)
 		return -1;
 	
-	d_fs_mount("misc.ldi");
-	d_fs_mount("maps.ldi");
-	d_fs_mount("assets.ldi");
+	d_fs_mount_self();
+	d_fs_mount("data/misc.ldi");
+	d_fs_mount("data/maps.ldi");
+	d_fs_mount("data/assets.ldi");
 
 	/* Nollställer allt och sätter upp alla strukturer för informationsskärm som visas i början */
 	if ((s = speedomanInit(s)) == NULL)
