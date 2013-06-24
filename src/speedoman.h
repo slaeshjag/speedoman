@@ -43,6 +43,7 @@ typedef struct {
 	void			(*camera_follow)(MOVABLE_ENTRY *e);
 	void			(*bullet_spawn)(int type, int direction, MOVABLE_ENTRY *owner_e, int x, int y);
 	void			(*meter_watch)(METER *m, int type, int *watch, int max);
+	int			(*movable_tile_coll)(MOVABLE_ENTRY *entry, int off_x, int off_y);
 } VAR;
 
 

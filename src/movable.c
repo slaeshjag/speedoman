@@ -41,6 +41,22 @@ void movableSpawn() {
 }
 
 
+int movableTileCollision(MOVABLE_ENTRY *entry, int off_x, int off_y) {
+	int box_x, box_y, box_w, box_h, w;
+
+	d_sprite_hitbox(entry->sprite, &box_x, &box_y, &box_w, &box_h);
+	box_x += (entry->x / 1000);
+	box_y += (entry->y / 1000);
+	box_x += (off_x < 0) ? -1 : (box_w + 1);
+	box_y += (off_y < 0) ? -1 : (box_h + 1);
+
+	box_x /= s->active_level->layer[entry->l].tile_w;
+	box_y /= s->active_level->layer[entry->l].tile_h;
+	w = s->active_level->layer[entry->l].tilemap->w;
+	return s->active_level->layer[entry->l].tilemap->data[box_x + box_y * w];
+}
+
+
 int movableLoad() {
 	int i;
 	MOVABLE_ENTRY *entry;
@@ -141,6 +157,14 @@ void movableMoveDo(DARNIT_MAP_LAYER *layer, int *pos, int *delta, int *vel, int 
 }
 
 
+int movableHackTest(MOVABLE_ENTRY *entry) {
+	return !((movableTileCollision(entry, -1, 1) & movableTileCollision(entry, 1, 1)) & COLLISION_TOP);
+}
+
+
+
+
+
 int movableGravity(MOVABLE_ENTRY *entry) {
 	int gravity, hack;
 	int delta_x, delta_y, r, p;
@@ -199,10 +223,11 @@ int movableGravity(MOVABLE_ENTRY *entry) {
 			if (r + delta_y < 1000 && r + delta_y >= 0) {
 				entry->y += delta_y;
 				delta_y = 0;
-				if (!hack)
+				if (!hack && !movableHackTest(entry)) {
 					entry->y_velocity = hack;
+				}
 				continue;
-			}
+			} 
 
 			if (delta_y > 0) {
 				r = 1000 - r;

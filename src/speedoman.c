@@ -27,6 +27,7 @@ SPEEDOMAN *speedomanInit() {
 	s->var.camera_follow = cameraMovableFollow;
 	s->var.bullet_spawn = bulletSpawn;
 	s->var.meter_watch = meterWatch;
+	s->var.movable_tile_coll = movableTileCollision;
 
 	meterSetup();
 	bulletInit();

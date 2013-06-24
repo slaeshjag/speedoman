@@ -2,4 +2,10 @@ assets/enemy1.png 32 32
 
 D
 T 200 0
+T 200 1
+E
+
+D
+T 200 7
+T 200 6
 E
