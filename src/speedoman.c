@@ -6,8 +6,8 @@ SPEEDOMAN *speedomanInit() {
 	if ((s = malloc(sizeof(SPEEDOMAN))) == NULL)
 		return NULL;
 	
-//	s->newstate = STATE_TESTGAME;
-	s->newstate = STATE_STAGE_SELECT;
+	s->newstate = STATE_TESTGAME;
+//	s->newstate = STATE_STAGE_SELECT;
 	s->state = STATE_DUMMY;
 
 	if ((s->config = d_stringtable_open("misc/config.ldsz")) == NULL)

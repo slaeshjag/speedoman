@@ -53,12 +53,12 @@ void playerHit(MOVABLE_ENTRY *self, int hp) {
 }
 
 
-void playerFixHitbox(SPEEDOMAN *s, MOVABLE_ENTRY *self) {
+int playerFixHitbox(SPEEDOMAN *s, MOVABLE_ENTRY *self) {
 	int dir, box1_x, box2_x, box1_y, box2_y, box1_w, box2_w, box1_h, box2_h, diff;
 
 	dir = playerDirection(self);
 	if (dir == p.last_dir)
-		return;
+		return 0;
 	p.last_dir = dir;
 	d_sprite_hitbox(self->sprite, &box1_x, &box1_y, &box1_w, &box1_h);
 	d_sprite_direction_set(self->sprite, dir);
@@ -66,10 +66,19 @@ void playerFixHitbox(SPEEDOMAN *s, MOVABLE_ENTRY *self) {
 	diff = (((box2_y + box2_h) - (box1_y + box1_h)));
 	self->y -= (diff * 1000);
 	/* TODO: Fix hixbox correction in X-axis */
-	diff = (box2_x + box2_w) - (box1_y + box1_w);
-	self->x -= (diff * 1000);
+	diff = (box2_x) - (box1_x);
+//	self->x += (diff * 1000);
+	if (s->var.movable_tile_coll(self, -1, -1) & COLLISION_RIGHT) {
+		self->x += abs((diff * 1000));
+	} else {
+		if (s->var.movable_tile_coll(self, 1, -1) & COLLISION_LEFT)
+			self->x -= abs((diff * 2000));
+	}
+			
+		
+	
 
-	return;
+	return 1;
 }
 
 
@@ -113,7 +122,8 @@ void player(SPEEDOMAN *s, MOVABLE_ENTRY *self, MOVABLE_MSG msg) {
 			p.coll_test = malloc(s->movable.movables * sizeof(int));
 			break;
 		case MOVABLE_MSG_LOOP:
-			playerFixHitbox(s, self);
+			if (playerFixHitbox(s, self))
+				break;
 			if (d_keys_get().x && !self->y_velocity)
 				self->y_velocity = s->cfg.jump_acceleration;
 
