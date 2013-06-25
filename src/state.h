@@ -2,11 +2,14 @@
 #define	__STATE_H__
 
 
-#define			STATE_DUMMY		0
-#define			STATE_SPLASH		1
-#define			STATE_TESTGAME		2
-#define			STATE_TESTMAP		100
 
+enum {
+	STATE_DUMMY,
+	STATE_SPLASH,
+	STATE_TESTGAME,
+	STATE_TESTMAP,
+	STATE_STAGE_SELECT,
+};
 
 int stateHandle();
 

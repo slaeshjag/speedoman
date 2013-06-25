@@ -6,6 +6,11 @@ void stateSplash() {
 }
 
 
+void stateStageSelect() {
+	stageSelectDraw();
+}
+
+
 void stateMap() {
 	int i;
 	
@@ -41,6 +46,8 @@ int stateHandle() {
 				break;
 			case STATE_SPLASH:
 				break;
+			case STATE_STAGE_SELECT:
+				break;
 			default:
 				break;
 		}
@@ -49,6 +56,8 @@ int stateHandle() {
 			case STATE_DUMMY:
 				break;
 			case STATE_SPLASH:
+				break;
+			case STATE_STAGE_SELECT:
 				break;
 			case STATE_TESTGAME:
 				cameraInit();
@@ -69,6 +78,9 @@ int stateHandle() {
 			break;
 		case STATE_TESTGAME:
 			stateMap();
+			break;
+		case STATE_STAGE_SELECT:
+			stateStageSelect();
 			break;
 		default:
 			fprintf(stderr, "Unhandled state %i\n", s->state);

@@ -64,8 +64,10 @@ void playerFixHitbox(SPEEDOMAN *s, MOVABLE_ENTRY *self) {
 	d_sprite_direction_set(self->sprite, dir);
 	d_sprite_hitbox(self->sprite, &box2_x, &box2_y, &box2_w, &box2_h);
 	diff = (((box2_y + box2_h) - (box1_y + box1_h)));
-	self->x -= (((box2_x - box1_x) + (box2_w - box1_w)) * 1000);
 	self->y -= (diff * 1000);
+	/* TODO: Fix hixbox correction in X-axis */
+	diff = (box2_x + box2_w) - (box1_y + box1_w);
+	self->x -= (diff * 1000);
 
 	return;
 }
