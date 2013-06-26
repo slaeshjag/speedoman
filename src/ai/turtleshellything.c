@@ -19,12 +19,12 @@ void shellthing(SPEEDOMAN *s, MOVABLE_ENTRY *self, MOVABLE_MSG msg) {
 		case MOVABLE_MSG_LOOP:
 			self->hit = 0;
 			if (self->x_velocity < 0) {
-				if (!(s->var.movable_tile_coll(self, -1, 1) & COLLISION_TOP)) {
+				if (!(s->var.movable_tile_coll(self, -1, 1) & COLLISION_TOP) || (s->var.movable_tile_coll(self, -1, 0) & COLLISION_RIGHT)) {
 					d_sprite_direction_set(self->sprite, 1);
 					self->x_velocity = 40;
 				}
 			} else if (self->x_velocity > 0) {
-				if (!(s->var.movable_tile_coll(self, 1, 1) & COLLISION_TOP)) {
+				if (!(s->var.movable_tile_coll(self, 1, 1) & COLLISION_TOP) || (s->var.movable_tile_coll(self, 1, 0) & COLLISION_LEFT)) {
 					d_sprite_direction_set(self->sprite, 0);
 					self->x_velocity = -40;
 				}

@@ -47,8 +47,8 @@ int movableTileCollision(MOVABLE_ENTRY *entry, int off_x, int off_y) {
 	d_sprite_hitbox(entry->sprite, &box_x, &box_y, &box_w, &box_h);
 	box_x += (entry->x / 1000);
 	box_y += (entry->y / 1000);
-	box_x += (off_x < 0) ? -1 : (box_w + 1);
-	box_y += (off_y < 0) ? -1 : (box_h + 1);
+	box_x += (off_x < 0) ? -1 : (box_w + 1 * (off_x == 0 ? -1 : 1));
+	box_y += (off_y < 0) ? -1 : (box_h + 1 * (off_y == 0 ? -1 : 1));
 
 	box_x /= s->active_level->layer[entry->l].tile_w;
 	box_y /= s->active_level->layer[entry->l].tile_h;
