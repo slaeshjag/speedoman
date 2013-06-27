@@ -57,6 +57,7 @@ typedef struct {
 	CAMERA			camera;
 	VAR			var;
 	BULLET			bullet;
+	const char		*load_level;
 	int			state;
 	int			newstate;
 	int			player;

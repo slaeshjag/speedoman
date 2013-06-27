@@ -6,3 +6,13 @@ SPEEDOMAN_WALK_SPEED		150
 SPEEDOMAN_HP			1000
 AI_LIB				misc/ai.code
 AI_TABLE			misc/ai_lookup.ldsz
+STAGE_1				maps/test.ldmz
+STAGE_2				maps/test.ldmz
+STAGE_3				maps/test.ldmz
+STAGE_4				maps/test.ldmz
+STAGE_5				maps/test.ldmz
+STAGE_6				maps/test.ldmz
+STAGE_7				maps/test.ldmz
+STAGE_8				maps/test.ldmz
+STAGE_X				maps/test.ldmz
+

@@ -1,5 +1,16 @@
 #include "speedoman.h"
 
+const char *stagename[] = {
+	"STAGE_1",
+	"STAGE_2",
+	"STAGE_3",
+	"STAGE_4",
+	"STAGE_5",
+	"STAGE_6",
+	"STEGE_7",
+	"STAGE_8",
+	"STAGE_X",
+};
 
 void stageSelectMoveCursor() {
 	int x_u, y_u;
@@ -52,6 +63,9 @@ void stageSelectDraw() {
 		if ((s->var.stage.selected_stage += 3) > 8)
 			s->var.stage.selected_stage -= 9;
 		d_keys_set(keys);
+	} else if (keys.BUTTON_ACCEPT) {
+		s->load_level = d_stringtable_entry(s->config, stagename[s->var.stage.selected_stage]);
+		s->newstate = STATE_TESTGAME;
 	}
 			
 	stageSelectMoveCursor();

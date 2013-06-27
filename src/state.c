@@ -61,7 +61,7 @@ int stateHandle() {
 				break;
 			case STATE_TESTGAME:
 				cameraInit();
-				levelLoad("maps/test.ldmz");
+				levelLoad();
 				movableLoad();
 			default:
 				break;
