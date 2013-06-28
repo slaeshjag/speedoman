@@ -17,6 +17,7 @@
 #include "meter.h"
 #include "stage_select.h"
 #include "save.h"
+#include "pause_screen.h"
 
 
 typedef struct {
@@ -40,6 +41,7 @@ typedef struct {
 typedef struct {
 	unsigned int		stages		: 8;
 	unsigned int		boss_stage	: 8;
+	unsigned int		weapon_status[8];
 } PROGRESS;
 
 
@@ -49,6 +51,7 @@ typedef struct {
 	METER_STRUCT		meter;
 	STAGE_SELECT		stage;
 	PROGRESS		progress;
+	PAUSE_SCREEN		pause;
 	void			(*camera_follow)(MOVABLE_ENTRY *e);
 	void			(*bullet_spawn)(int type, int direction, MOVABLE_ENTRY *owner_e, int x, int y);
 	void			(*meter_watch)(METER *m, int type, int *watch, int max);

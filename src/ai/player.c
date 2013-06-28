@@ -123,8 +123,10 @@ void player(SPEEDOMAN *s, MOVABLE_ENTRY *self, MOVABLE_MSG msg) {
 				break;
 			if (d_keys_get().x && !self->y_velocity)
 				self->y_velocity = s->cfg.jump_acceleration;
-
-			if (d_keys_get().left) {
+			
+			if (d_keys_get().start)
+				s->var.pause.active = 1;
+			else if (d_keys_get().left) {
 				self->x_velocity = -s->cfg.speedoman_walk_speed;
 				p.last_walk_dir = 0;
 			} else if (d_keys_get().right) {
