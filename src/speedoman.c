@@ -34,6 +34,7 @@ SPEEDOMAN *speedomanInit() {
 	bulletInit();
 	movableInit();
 	cameraInit();
+	save_init();
 	stageSelectInit();
 
 	return s;
