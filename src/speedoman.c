@@ -13,6 +13,8 @@ SPEEDOMAN *speedomanInit() {
 	if ((s->config = d_stringtable_open("misc/config.ldsz")) == NULL)
 		return NULL;
 	d_stringtable_section_load(s->config, "INDEX");
+	s->var.lang = d_stringtable_open("misc/lang.ldsz");
+	d_stringtable_section_load(s->var.lang, "EN");
 
 	s->cfg.terminal_velocity = atoi(d_stringtable_entry(s->config, "TERMINAL_VELOCITY"));
 	s->cfg.jump_acceleration = atoi(d_stringtable_entry(s->config, "JUMP_ACCELERATION"));
@@ -29,6 +31,7 @@ SPEEDOMAN *speedomanInit() {
 	s->var.bullet_spawn = bulletSpawn;
 	s->var.meter_watch = meterWatch;
 	s->var.movable_tile_coll = movableTileCollision;
+	s->var.font = d_font_load("assets/dejavusans.ttf", 24, 512, 512);
 
 	meterSetup();
 	bulletInit();

@@ -52,6 +52,8 @@ typedef struct {
 	STAGE_SELECT		stage;
 	PROGRESS		progress;
 	PAUSE_SCREEN		pause;
+	DARNIT_FONT		*font;
+	DARNIT_STRINGTABLE	*lang;
 	void			(*camera_follow)(MOVABLE_ENTRY *e);
 	void			(*bullet_spawn)(int type, int direction, MOVABLE_ENTRY *owner_e, int x, int y);
 	void			(*meter_watch)(METER *m, int type, int *watch, int max);

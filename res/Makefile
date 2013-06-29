@@ -5,6 +5,7 @@ default:
 	@mkdir -p misc
 	@darnit-stringtable config misc/config.ldsz 2>/dev/null
 	@darnit-stringtable ai misc/ai_lookup.ldsz 2>/dev/null
+	@darnit-stringtable lang misc/lang.ldsz 2>/dev/null
 	@cp ../src/ai/ai.code misc/
 	@darnit-fsimage misc data/misc.ldi
 	@rm -Rf misc
@@ -21,6 +22,7 @@ default:
 	@cp *.spr assets
 	@cp *.lst assets
 	@cp *.dmg assets
+	@cp *.ttf assets
 	@darnit-fsimage assets data/assets.ldi
 	@rm -Rf assets
 	

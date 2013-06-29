@@ -5,9 +5,11 @@ typedef struct {
 	int			selection;
 	int			active;
 	DARNIT_MAP		*menu_background;
+	DARNIT_TEXT_SURFACE	*menu_options;
 } PAUSE_SCREEN;
 
 void pausescreen_init();
+void pausescreen_generate_menu_text();
 void pausescreen_draw();
 
 #endif
