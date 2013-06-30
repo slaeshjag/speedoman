@@ -71,6 +71,7 @@ int stateHandle() {
 				cameraInit();
 				levelLoad();
 				movableLoad();
+				s->var.pause.active = 0;
 			default:
 				break;
 		}

@@ -8,6 +8,10 @@
 #include <limits.h>
 
 #include <darnit/darnit.h>
+#undef	BUTTON_ACCEPT
+#undef 	BUTTON_CANCEL
+#define	BUTTON_ACCEPT		x
+#define	BUTTON_CANCEL		l
 
 #include "state.h"
 #include "movable.h"
@@ -58,6 +62,7 @@ typedef struct {
 	void			(*bullet_spawn)(int type, int direction, MOVABLE_ENTRY *owner_e, int x, int y);
 	void			(*meter_watch)(METER *m, int type, int *watch, int max);
 	int			(*movable_tile_coll)(MOVABLE_ENTRY *entry, int off_x, int off_y);
+	void 			(*movable_freeze_sprites)(int freeze);
 } VAR;
 
 

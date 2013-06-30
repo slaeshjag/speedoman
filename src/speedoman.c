@@ -31,6 +31,7 @@ SPEEDOMAN *speedomanInit() {
 	s->var.bullet_spawn = bulletSpawn;
 	s->var.meter_watch = meterWatch;
 	s->var.movable_tile_coll = movableTileCollision;
+	s->var.movable_freeze_sprites = movableFreezeSprites;
 	s->var.font = d_font_load("assets/dejavusans.ttf", 24, 512, 512);
 
 	meterSetup();

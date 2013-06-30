@@ -3,7 +3,7 @@
 int save_init() {
 	DARNIT_FILE *f;
 
-	memset(&s->var.progress, sizeof(s->var.progress), 0);
+	memset(&s->var.progress, 0, sizeof(PROGRESS));
 
 	if (!(f = d_file_open("savegame.dat", "rb")))
 		return 0;

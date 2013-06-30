@@ -7,7 +7,7 @@ void pausescreen_init() {
 	int x, y;
 
 	s->var.pause.selection = 0;
-	s->var.pause.active = 1;
+	s->var.pause.active = 0;
 	s->var.pause.menu_background = d_map_load("maps/menu_background.ldmz");
 	x = (s->var.screen_w - s->var.pause.menu_background->layer->tilemap->w * s->var.pause.menu_background->layer->tile_w) >> 1;
 	y = (s->var.screen_h - s->var.pause.menu_background->layer->tilemap->h * s->var.pause.menu_background->layer->tile_h) >> 1;
@@ -86,6 +86,18 @@ void pausescreen_handle_menu() {
 		dir = 1;
 		keys = d_keys_zero();
 		keys.down = 1;
+	} else if (keys.BUTTON_ACCEPT || keys.start) {
+		d_keys_set(keys);
+		
+		if (s->var.pause.selection == 0) {
+			s->var.movable_freeze_sprites(0);
+			s->var.pause.active = 0;
+		} else if (s->var.pause.selection == 12)
+			s->newstate = STATE_STAGE_SELECT;
+	} else if (keys.BUTTON_CANCEL) {
+		s->var.pause.active = 0;
+		s->var.movable_freeze_sprites(0);
+		d_keys_set(keys);
 	}
 
 	if (dir) {
@@ -113,8 +125,6 @@ void pausescreen_handle_menu() {
 
 
 void pausescreen_draw() {
-	DARNIT_KEYS keys;
-
 	if (!s->var.pause.active)
 		return;
 	pausescreen_generate_menu_text();
@@ -124,10 +134,6 @@ void pausescreen_draw() {
 	d_text_surface_draw(s->var.pause.menu_options);
 	d_render_tile_draw(s->var.pause.selected, 1);
 	d_render_blend_disable();
-	keys = d_keys_get();
-
-	if (keys.BUTTON_CANCEL)
-		s->var.pause.active = 0;
 
 	return;
 }

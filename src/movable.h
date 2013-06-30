@@ -64,6 +64,7 @@ int movableGravity(MOVABLE_ENTRY *entry);
 void movableLoop();
 void movableLoopRender(int layer);
 int movableTileCollision(MOVABLE_ENTRY *entry, int off_x, int off_y);
+void movableFreezeSprites(int freeze);
 
 
 #endif

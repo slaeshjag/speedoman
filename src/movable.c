@@ -273,6 +273,15 @@ void movableLoop() {
 }
 
 
+void movableFreezeSprites(int freeze) {
+	int i;
+
+	for (i = 0; i < s->movable.movables; i++)
+		(!freeze ? d_sprite_animate_start : d_sprite_animate_pause)(s->movable.movable[i].sprite);
+	return;
+}
+
+
 void movableLoopRender(int layer) {
 	int i, res;
 
