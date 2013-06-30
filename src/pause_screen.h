@@ -6,6 +6,7 @@ typedef struct {
 	int			active;
 	DARNIT_MAP		*menu_background;
 	DARNIT_TEXT_SURFACE	*menu_options;
+	DARNIT_TILE		*selected;
 } PAUSE_SCREEN;
 
 void pausescreen_init();
