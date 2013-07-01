@@ -25,6 +25,7 @@ SPEEDOMAN *speedomanInit() {
 
 	s->var.screen_w = 800;
 	s->var.screen_h = 480;
+	s->var.selected_weapon = -1;
 	
 	s->active_level = NULL;
 	s->var.camera_follow = cameraMovableFollow;

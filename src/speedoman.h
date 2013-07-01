@@ -40,7 +40,7 @@ typedef struct {
 	METER			*boss_health;
 	DARNIT_TILESHEET	*ts;
 } METER_STRUCT;
-	
+
 
 typedef struct {
 	unsigned int		stages		: 8;
@@ -63,6 +63,7 @@ typedef struct {
 	void			(*meter_watch)(METER *m, int type, int *watch, int max);
 	int			(*movable_tile_coll)(MOVABLE_ENTRY *entry, int off_x, int off_y);
 	void 			(*movable_freeze_sprites)(int freeze);
+	int			selected_weapon;
 } VAR;
 
 
