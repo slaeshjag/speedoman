@@ -46,38 +46,44 @@ void stateMap() {
 int stateHandle() {
 
 	if (s->newstate != s->state) {
-		switch (s->state) {
-			case STATE_DUMMY:
-				break;
-			case STATE_SPLASH:
-				break;
-			case STATE_STAGE_SELECT:
-				break;
-			case STATE_TESTGAME:
-				save_save();
-				break;
-			default:
-				break;
-		}
-
-		switch (s->newstate) {
-			case STATE_DUMMY:
-				break;
-			case STATE_SPLASH:
-				break;
-			case STATE_STAGE_SELECT:
-				break;
-			case STATE_TESTGAME:
-				cameraInit();
+		if (d_render_fade_status() != 2) {
+			d_render_fade_in(500, 0, 0, 0);
+		} else {
+			switch (s->state) {
+				case STATE_DUMMY:
+					break;
+				case STATE_SPLASH:
+					break;
+				case STATE_STAGE_SELECT:
+					break;
+				case STATE_TESTGAME:
+					save_save();
+					break;
+				default:
+					break;
+			}
+	
+			switch (s->newstate) {
+				case STATE_DUMMY:
+					break;
+				case STATE_SPLASH:
+					break;
+				case STATE_STAGE_SELECT:
+					break;
+				case STATE_TESTGAME:
+					cameraInit();
 				levelLoad();
-				movableLoad();
-				s->var.pause.active = 0;
-			default:
-				break;
+					movableLoad();
+					s->var.pause.active = 0;
+				default:
+					break;
+			}
+			
+			d_render_fade_out(500);
+			s->state = s->newstate;
 		}
 	}
 
-	s->state = s->newstate;
 
 	switch (s->state) {
 		case STATE_DUMMY:
