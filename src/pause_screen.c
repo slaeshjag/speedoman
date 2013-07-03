@@ -36,10 +36,10 @@ void pausescreen_generate_menu_text() {
 	d_text_surface_string_append(s->var.pause.menu_options, "\n");
 
 	for (i = 0; i < 8; i++) {
-		if (s->var.progress.stages & (1 << i))
-			d_text_surface_color_next(s->var.pause.menu_options, 255, 255, 255);
-		else if (s->var.selected_weapon == i)
+		if (s->var.selected_weapon == i)
 			d_text_surface_color_next(s->var.pause.menu_options, 255, 255, 0);
+		else if (s->var.progress.stages & (1 << i))
+			d_text_surface_color_next(s->var.pause.menu_options, 255, 255, 255);
 		else
 			d_text_surface_color_next(s->var.pause.menu_options, 127, 127, 127);
 		sprintf(keyname, "WEAPON%i", i);
