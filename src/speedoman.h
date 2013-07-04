@@ -46,6 +46,8 @@ typedef struct {
 	unsigned int		stages		: 8;
 	unsigned int		boss_stage	: 8;
 	unsigned int		weapon_status[8];
+	unsigned int		e_tank;
+	unsigned int		w_tank;
 } PROGRESS;
 
 

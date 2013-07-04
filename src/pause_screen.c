@@ -49,8 +49,14 @@ void pausescreen_generate_menu_text() {
 
 	d_text_surface_color_next(s->var.pause.menu_options, 255, 255, 255);
 	d_text_surface_string_append(s->var.pause.menu_options, d_stringtable_entry(s->var.lang, "ETANK"));
+	d_text_surface_offset_next_set(s->var.pause.menu_options, 180);
+	sprintf(keyname, "[%.2i]", s->var.progress.e_tank);
+	d_text_surface_string_append(s->var.pause.menu_options, keyname);
 	d_text_surface_string_append(s->var.pause.menu_options, "\n");
 	d_text_surface_string_append(s->var.pause.menu_options, d_stringtable_entry(s->var.lang, "WTANK"));
+	d_text_surface_offset_next_set(s->var.pause.menu_options, 180);
+	sprintf(keyname, "[%.2i]", s->var.progress.w_tank);
+	d_text_surface_string_append(s->var.pause.menu_options, keyname);
 	d_text_surface_string_append(s->var.pause.menu_options, "\n");
 	d_text_surface_string_append(s->var.pause.menu_options, d_stringtable_entry(s->var.lang, "Exit stage"));
 	d_text_surface_string_append(s->var.pause.menu_options, "\n");
