@@ -1,6 +1,22 @@
 #include "speedoman.h"
 
 
+int speedomanPlayerAddHP(int hp) {
+	int i;
+
+	for (i = 0; i < s->movable.movables; i++) {
+		if (!strcmp(d_map_prop(s->active_level->object[i].ref, "ai"), "PLAYER")) {
+			s->movable.movable[i].hp += hp;
+			if (s->movable.movable[i].hp > s->movable.movable[i].hp_max)
+				s->movable.movable[i].hp = s->movable.movable[i].hp_max;
+			break;
+		}
+	}
+
+	return s->movable.movable[i].hp_max - s->movable.movable[i].hp;
+}
+
+
 SPEEDOMAN *speedomanInit() {
 
 	if ((s = malloc(sizeof(SPEEDOMAN))) == NULL)
@@ -33,6 +49,7 @@ SPEEDOMAN *speedomanInit() {
 	s->var.meter_watch = meterWatch;
 	s->var.movable_tile_coll = movableTileCollision;
 	s->var.movable_freeze_sprites = movableFreezeSprites;
+	s->var.speedoman_player_add_hp = speedomanPlayerAddHP;
 	s->var.font = d_font_load("assets/dejavusans.ttf", 24, 512, 512);
 
 	meterSetup();

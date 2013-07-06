@@ -66,6 +66,7 @@ typedef struct {
 	void			(*meter_watch)(METER *m, int type, int *watch, int max);
 	int			(*movable_tile_coll)(MOVABLE_ENTRY *entry, int off_x, int off_y);
 	void 			(*movable_freeze_sprites)(int freeze);
+	int			(*speedoman_player_add_hp)(int hp);
 	int			selected_weapon;
 } VAR;
 
@@ -83,6 +84,9 @@ typedef struct {
 	int			newstate;
 	int			player;
 } SPEEDOMAN;
+
+
+int speedomanPlayerAddHP(int hp);
 
 SPEEDOMAN *s;		/* Just this one, promise :x */
 

@@ -106,6 +106,12 @@ void pausescreen_handle_menu() {
 			s->newstate = STATE_STAGE_SELECT;
 		else if (s->var.pause.selection > 0 && s->var.pause.selection < 10)
 			s->var.selected_weapon = s->var.pause.selection - 2;
+		else if (s->var.pause.selection == 10) {
+			if (s->var.progress.e_tank && speedomanPlayerAddHP(0)) {
+				speedomanPlayerAddHP(INT_MAX/2);
+				s->var.progress.e_tank--;
+			}
+		}
 	} else if (keys.BUTTON_CANCEL) {
 		s->var.pause.active = 0;
 		s->var.movable_freeze_sprites(0);
