@@ -116,7 +116,7 @@ void player(SPEEDOMAN *s, MOVABLE_ENTRY *self, MOVABLE_MSG msg) {
 			p.shoot_start = 0;
 			s->var.meter_watch(s->var.meter.player_health, 1, &self->hp, self->hp_max);
 			s->player = (int) (self - s->movable.movable) / sizeof(MOVABLE_ENTRY);
-			p.coll_test = malloc(s->movable.movables * sizeof(int));
+			p.coll_test = s->movable.ai_coll_buf;
 			break;
 		case MOVABLE_MSG_LOOP:
 			if (playerFixHitbox(s, self))
@@ -153,7 +153,6 @@ void player(SPEEDOMAN *s, MOVABLE_ENTRY *self, MOVABLE_MSG msg) {
 			break;
 		case MOVABLE_MSG_DESTROY:
 			s->var.meter_watch(s->var.meter.player_health, 0, NULL, 1);
-			free(p.coll_test);
 		default:
 			break;
 	}

@@ -158,5 +158,17 @@
     <property name="sprite" value="assets/enemy1.spr"/>
    </properties>
   </object>
+  <object name="wtank" x="256" y="160" width="32" height="32">
+   <properties>
+    <property name="ai" value="W-TANK"/>
+    <property name="sprite" value="assets/wtank.spr"/>
+   </properties>
+  </object>
+  <object name="etank" x="288" y="160" width="32" height="32">
+   <properties>
+    <property name="ai" value="E-TANK"/>
+    <property name="sprite" value="assets/etank.spr"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

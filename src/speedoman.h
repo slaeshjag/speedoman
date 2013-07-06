@@ -59,6 +59,7 @@ typedef struct {
 	PROGRESS		progress;
 	PAUSE_SCREEN		pause;
 	DARNIT_FONT		*font;
+	DARNIT_TILESHEET	*items;
 	DARNIT_STRINGTABLE	*lang;
 	void			(*camera_follow)(MOVABLE_ENTRY *e);
 	void			(*bullet_spawn)(int type, int direction, MOVABLE_ENTRY *owner_e, int x, int y);

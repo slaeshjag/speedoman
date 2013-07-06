@@ -43,6 +43,7 @@ typedef struct {
 	int			hit_time;
 	int			type;
 	int			touch_dmg;
+	int			prevent_respawn;
 	void			(*ai)(void *s, void *entry, MOVABLE_MSG msg);
 } MOVABLE_ENTRY;
 	
@@ -50,6 +51,7 @@ typedef struct {
 typedef struct {
 	MOVABLE_ENTRY		*movable;
 	unsigned int		*coll_buf;
+	unsigned int		*ai_coll_buf;
 	DARNIT_BBOX		*bbox;
 	int			movables;
 	DARNIT_DYNLIB		*ai;

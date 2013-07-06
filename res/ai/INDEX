@@ -1,3 +1,5 @@
 PLAYER				player
 DUMMY				dummy
 SHELLTHING			shellthing
+E-TANK				e_tank
+W-TANK				w_tank

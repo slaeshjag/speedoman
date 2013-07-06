@@ -22,6 +22,8 @@ void movableSpawn() {
 	int i, h_x, h_y, h_w, h_h;
 
 	for (i = 0; i < s->movable.movables; i++) {
+		if (s->movable.movable[i].prevent_respawn)
+			continue;
 		d_sprite_direction_set(s->movable.movable[i].sprite, 0);
 		s->movable.movable[i].ai = d_dynlib_get(s->movable.ai, d_stringtable_entry(s->movable.ai_table, d_map_prop(s->active_level->object[i].ref, "ai")));
 		s->movable.movable[i].x = s->active_level->object[i].x * 1000;
@@ -69,6 +71,7 @@ int movableLoad() {
 	if (!(entry = realloc(s->movable.movable, sizeof(MOVABLE_ENTRY) * s->active_level->objects))) {
 		free(s->movable.movable);
 		free(s->movable.coll_buf);
+		free(s->movable.ai_coll_buf);
 		d_bbox_free(s->movable.bbox);
 		d_dynlib_close(s->movable.ai);
 		movableInit();
@@ -78,11 +81,14 @@ int movableLoad() {
 	s->movable.movable = entry;
 	s->movable.movables = s->active_level->objects;
 	s->movable.coll_buf = malloc(sizeof(int) * s->active_level->objects);
+	s->movable.ai_coll_buf = malloc(sizeof(int) * s->active_level->objects);
 	s->movable.bbox = d_bbox_new(s->movable.movables);
 
 	for (i = 0; i < s->movable.movables; i++) {
 		s->movable.movable[i].sprite = d_sprite_load(d_map_prop(s->active_level->object[i].ref, "sprite"), 0, DARNIT_PFORMAT_RGB5A1);
 		d_sprite_animate_start(s->movable.movable[i].sprite);
+		s->movable.movable[i].prevent_respawn = 0;
+
 	}
 	
 	movableSpawn();
