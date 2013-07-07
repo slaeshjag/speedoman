@@ -56,6 +56,21 @@ void playerHit(MOVABLE_ENTRY *self, int hp) {
 int playerFixHitbox(SPEEDOMAN *s, MOVABLE_ENTRY *self) {
 	int dir, box1_x, box2_x, box1_y, box2_y, box1_w, box2_w, box1_h, box2_h, diff;
 
+	/* Check killer collision tiles */
+	if (s->var.movable_tile_coll(self, 0, 0) & COLLISION_KILL ||
+	    s->var.movable_tile_coll(self, 0, -2) & COLLISION_KILL ||
+	    s->var.movable_tile_coll(self, -2, 0) & COLLISION_KILL ||
+	    s->var.movable_tile_coll(self, -2, -2) & COLLISION_KILL)
+		self->hp = 0;
+	
+	if (s->var.movable_tile_coll(self, 0, 0) & COLLISION_CHECKPOINT ||
+	    s->var.movable_tile_coll(self, 0, -2) & COLLISION_CHECKPOINT ||
+	    s->var.movable_tile_coll(self, -2, 0) & COLLISION_CHECKPOINT ||
+	    s->var.movable_tile_coll(self, -2, -2) & COLLISION_CHECKPOINT) {
+		s->movable.respawn_x = self->x;
+		s->movable.respawn_y = self->y;
+	}
+	
 	dir = playerDirection(self);
 	if (dir == p.last_dir)
 		return 0;
@@ -74,7 +89,7 @@ int playerFixHitbox(SPEEDOMAN *s, MOVABLE_ENTRY *self) {
 		if (s->var.movable_tile_coll(self, 1, -1) & COLLISION_LEFT)
 			self->x -= abs((diff * 2000));
 	}
-	
+
 	return 1;
 }
 
@@ -114,6 +129,12 @@ void player(SPEEDOMAN *s, MOVABLE_ENTRY *self, MOVABLE_MSG msg) {
 			self->hit = 0;
 			self->type = 0;
 			p.shoot_start = 0;
+			
+			if (s->movable.respawn_x != -1) {
+				self->x = s->movable.respawn_x;
+				self->y = s->movable.respawn_y;
+			}
+
 			s->var.meter_watch(s->var.meter.player_health, 1, &self->hp, self->hp_max);
 			s->player = (int) (self - s->movable.movable) / sizeof(MOVABLE_ENTRY);
 			p.coll_test = s->movable.ai_coll_buf;

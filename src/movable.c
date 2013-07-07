@@ -51,6 +51,8 @@ int movableTileCollision(MOVABLE_ENTRY *entry, int off_x, int off_y) {
 	box_y += (entry->y / 1000);
 	box_x += (off_x < 0) ? -1 : (box_w + 1 * (off_x == 0 ? -1 : 1));
 	box_y += (off_y < 0) ? -1 : (box_h + 1 * (off_y == 0 ? -1 : 1));
+	off_x += (off_x == -2) ? 1 : 0;
+	off_y += (off_y == -2) ? 1 : 0;
 
 	box_x /= s->active_level->layer[entry->l].tile_w;
 	box_y /= s->active_level->layer[entry->l].tile_h;
@@ -97,7 +99,7 @@ int movableLoad() {
 }
 
 
-/* NOTE: An award of one strawberry goes to whoever can guess who suggested this at the function suffix */
+/* NOTE: An award of one strawberry goes to whoever can guess who suggested this as the function suffix */
 void movableKillEmAll() {
 	int i;
 

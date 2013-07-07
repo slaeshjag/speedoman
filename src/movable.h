@@ -5,6 +5,8 @@
 #define	COLLISION_LEFT		0x20000
 #define	COLLISION_TOP		0x40000
 #define	COLLISION_RIGHT		0x80000
+#define	COLLISION_KILL		0x100000
+#define	COLLISION_CHECKPOINT	0x200000
 
 
 typedef enum {
@@ -56,6 +58,8 @@ typedef struct {
 	int			movables;
 	DARNIT_DYNLIB		*ai;
 	DARNIT_STRINGTABLE	*ai_table;
+	int			respawn_x;
+	int			respawn_y;
 } MOVABLE;
 
 int movableInit();
