@@ -71,6 +71,7 @@ void movableLoop();
 void movableLoopRender(int layer);
 int movableTileCollision(MOVABLE_ENTRY *entry, int off_x, int off_y);
 void movableFreezeSprites(int freeze);
+void movableRespawn();
 
 
 #endif

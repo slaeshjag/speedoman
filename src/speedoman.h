@@ -48,7 +48,15 @@ typedef struct {
 	unsigned int		weapon_status[8];
 	unsigned int		e_tank;
 	unsigned int		w_tank;
+	unsigned int		lives;
 } PROGRESS;
+
+
+typedef struct {
+	int			request_respawn;
+	int			respawn_time;
+	DARNIT_TEXT_SURFACE	*ready;
+} RESPAWN;
 
 
 typedef struct {
@@ -61,6 +69,7 @@ typedef struct {
 	DARNIT_FONT		*font;
 	DARNIT_TILESHEET	*items;
 	DARNIT_STRINGTABLE	*lang;
+	RESPAWN			respawn;
 	void			(*camera_follow)(MOVABLE_ENTRY *e);
 	void			(*bullet_spawn)(int type, int direction, MOVABLE_ENTRY *owner_e, int x, int y);
 	void			(*meter_watch)(METER *m, int type, int *watch, int max);

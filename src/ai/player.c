@@ -129,6 +129,8 @@ void player(SPEEDOMAN *s, MOVABLE_ENTRY *self, MOVABLE_MSG msg) {
 			self->hit = 0;
 			self->type = 0;
 			p.shoot_start = 0;
+			s->var.respawn.request_respawn = 1;
+			s->var.respawn.respawn_time = 2000;
 			
 			if (s->movable.respawn_x != -1) {
 				self->x = s->movable.respawn_x;
@@ -174,6 +176,8 @@ void player(SPEEDOMAN *s, MOVABLE_ENTRY *self, MOVABLE_MSG msg) {
 			break;
 		case MOVABLE_MSG_DESTROY:
 			s->var.meter_watch(s->var.meter.player_health, 0, NULL, 1);
+			s->var.respawn.request_respawn = -1;
+			s->var.respawn.respawn_time = 2000;
 		default:
 			break;
 	}

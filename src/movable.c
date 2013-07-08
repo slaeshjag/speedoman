@@ -94,6 +94,7 @@ int movableLoad() {
 	}
 	
 	movableSpawn();
+	movableLoop();
 
 	return 0;
 }
@@ -105,6 +106,8 @@ void movableKillEmAll() {
 
 	for (i = 0; i < s->movable.movables; i++) {
 		if (!s->movable.movable[i].ai)
+			continue;
+		if (s->movable.movable[i].hp <= 0)
 			continue;
 		s->movable.movable[i].ai(s, &s->movable.movable[i], MOVABLE_MSG_DESTROY);
 	}
@@ -118,6 +121,7 @@ void movableKillEmAll() {
 void movableRespawn() {
 	movableKillEmAll();
 	movableSpawn();
+	movableLoop();
 
 	return;
 }
@@ -271,12 +275,11 @@ void movableLoop() {
 		bulletTest(&s->movable.movable[i]);
 		if (s->movable.movable[i].hp <= 0) {
 			d_bbox_delete(s->movable.bbox, i);
+			if (s->movable.movable[i].ai)
+				s->movable.movable[i].ai(s, &s->movable.movable[i], MOVABLE_MSG_DESTROY);
 			/* TODO: Make it play some sound effect here */
 		}
 	}
-
-	if (s->movable.movable[s->player].hp <= 0)
-		movableRespawn();
 
 }
 

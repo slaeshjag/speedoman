@@ -59,6 +59,7 @@ SPEEDOMAN *speedomanInit() {
 	save_init();
 	pausescreen_init();
 	stageSelectInit();
+	level_init();
 
 	return s;
 }

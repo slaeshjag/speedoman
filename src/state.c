@@ -14,11 +14,12 @@ void stateStageSelect() {
 void stateMap() {
 	int i;
 	
-	if (!s->var.pause.active) {
+	if (!s->var.pause.active && !s->var.respawn.request_respawn) {
 		movableLoop();
-		cameraLoop();
 		bulletLoop();
 	}
+	
+	cameraLoop();
 
 	for (i = 0; i < s->active_level->layers; i++) {
 		d_tilemap_camera_move(s->active_level->layer[i].tilemap, s->camera.x, s->camera.y);
@@ -32,6 +33,7 @@ void stateMap() {
 
 	d_render_blend_enable();
 	bulletDraw();
+	level_respawn_loop();
 	d_render_blend_disable();
 	meterDrawAll();
 
@@ -72,9 +74,11 @@ int stateHandle() {
 					break;
 				case STATE_TESTGAME:
 					cameraInit();
-				levelLoad();
+					levelLoad();
+					s->var.respawn.request_respawn = 0;
 					movableLoad();
 					s->var.pause.active = 0;
+					movableFreezeSprites(1);
 				default:
 					break;
 			}
