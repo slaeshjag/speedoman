@@ -92,7 +92,7 @@ void pausescreen_move_cursor() {
 
 void pausescreen_handle_menu() {
 	DARNIT_KEYS keys;
-	int dir;
+	int dir, changed = 0;
 
 	keys = d_keys_get();
 
@@ -107,6 +107,7 @@ void pausescreen_handle_menu() {
 		keys.down = 1;
 	} else if (keys.BUTTON_ACCEPT || keys.start) {
 		d_keys_set(keys);
+		changed = 1;
 		
 		if (s->var.pause.selection == 0) {
 			s->var.movable_freeze_sprites(0);
@@ -147,6 +148,12 @@ void pausescreen_handle_menu() {
 		pausescreen_move_cursor();
 	}
 
+	if (s->var.pause.active == 1)
+		changed = s->var.pause.active++;
+
+	if (changed)
+		pausescreen_generate_menu_text();
+
 	return;
 }
 
@@ -154,7 +161,6 @@ void pausescreen_handle_menu() {
 void pausescreen_draw() {
 	if (!s->var.pause.active)
 		return;
-	pausescreen_generate_menu_text();
 	pausescreen_handle_menu();
 	d_tilemap_draw(s->var.pause.menu_background->layer->tilemap);
 	d_render_blend_enable();
