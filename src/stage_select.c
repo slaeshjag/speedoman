@@ -7,7 +7,7 @@ const char *stagename[] = {
 	"STAGE_4",
 	"STAGE_5",
 	"STAGE_6",
-	"STEGE_7",
+	"STAGE_7",
 	"STAGE_8",
 	"STAGE_X",
 };

@@ -4,7 +4,7 @@ int save_init() {
 	DARNIT_FILE *f;
 
 	memset(&s->var.progress, 0, sizeof(PROGRESS));
-	s->var.progress.lives = 5;
+	s->var.progress.lives = SPEEDOMAN_START_AMOUNT_LIVES;
 
 	if (!(f = d_file_open("savegame.dat", "rb")))
 		return 0;

@@ -10,8 +10,9 @@
 #include <darnit/darnit.h>
 #undef	BUTTON_ACCEPT
 #undef 	BUTTON_CANCEL
-#define	BUTTON_ACCEPT		x
-#define	BUTTON_CANCEL		l
+#define	BUTTON_ACCEPT			x
+#define	BUTTON_CANCEL			l
+#define	SPEEDOMAN_START_AMOUNT_LIVES	5
 
 #include "state.h"
 #include "movable.h"
@@ -48,7 +49,9 @@ typedef struct {
 	unsigned int		weapon_status[8];
 	unsigned int		e_tank;
 	unsigned int		w_tank;
-	unsigned int		lives;
+	int			lives;
+	unsigned int		death_count;
+	unsigned int		game_over_count;
 } PROGRESS;
 
 
@@ -56,6 +59,7 @@ typedef struct {
 	int			request_respawn;
 	int			respawn_time;
 	DARNIT_TEXT_SURFACE	*ready;
+	DARNIT_TEXT_SURFACE	*game_over;
 } RESPAWN;
 
 
