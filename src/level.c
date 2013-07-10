@@ -2,7 +2,7 @@
 
 
 void level_init() {
-	int x, y;
+	int x, y, i;
 
 	x = d_font_string_w(s->var.font, d_stringtable_entry(s->var.lang, "Ready"));
 	x >>= 1;
@@ -21,6 +21,25 @@ void level_init() {
 	
 	s->var.respawn.game_over = d_text_surface_new(s->var.font, 20, 200, x, y);
 	d_text_surface_string_append(s->var.respawn.game_over, d_stringtable_entry(s->var.lang, "Game over"));
+
+	/* Initialize particle emitters used when the player dies */
+	for (i = 0; i < 4; i++) {
+		s->var.respawn.player_death[i] = d_particle_new(100, DARNIT_PARTICLE_TYPE_POINT);
+		if (i & 1) {
+			d_particle_color_start(s->var.respawn.player_death[i], 240, 184, 136, 255);
+			d_particle_color_target(s->var.respawn.player_death[i], 240, 184, 136, 0);
+		} else {
+			d_particle_color_start(s->var.respawn.player_death[i], 144, 120, 0, 255);
+			d_particle_color_target(s->var.respawn.player_death[i], 144, 120, 0, 0);
+		}
+
+		d_particle_emitter_angle(s->var.respawn.player_death[i], 0, 3600);
+		d_particle_emitter_velocity(s->var.respawn.player_death[i], 50, 100);
+		d_particle_emitter_gravity(s->var.respawn.player_death[i], 0, 0);
+		d_particle_life(s->var.respawn.player_death[i], 1000);
+		d_particle_mode(s->var.respawn.player_death[i], DARNIT_PARTICLE_MODE_PULSAR);
+	}
+
 
 	return;
 }
@@ -42,6 +61,8 @@ int levelLoad() {
 
 
 void level_respawn_loop() {
+	int i;
+
 	if (s->var.respawn.respawn_time <= 0)
 		return;
 	movableFreezeSprites(1);
@@ -49,6 +70,15 @@ void level_respawn_loop() {
 		d_text_surface_draw(s->var.respawn.ready);
 	else if (s->var.respawn.request_respawn == -2)
 		d_text_surface_draw(s->var.respawn.game_over);
+	else if (s->var.respawn.request_respawn == -1) {
+		if (s->var.respawn.respawn_time > 1000)
+			d_particle_pulse(s->var.respawn.player_death[(s->var.respawn.respawn_time - 1001) / 250]);
+		d_render_offset(s->camera.x, s->camera.y);
+		for (i = 0; i < 4; i++)
+			d_particle_draw(s->var.respawn.player_death[i]);
+		d_render_offset(0, 0);
+	}
+
 	s->var.respawn.respawn_time -= d_last_frame_time();
 	if (s->var.respawn.respawn_time > 0)
 		return;

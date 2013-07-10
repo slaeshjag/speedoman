@@ -60,6 +60,7 @@ typedef struct {
 	int			respawn_time;
 	DARNIT_TEXT_SURFACE	*ready;
 	DARNIT_TEXT_SURFACE	*game_over;
+	DARNIT_PARTICLE		*player_death[4];
 } RESPAWN;
 
 

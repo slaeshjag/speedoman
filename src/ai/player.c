@@ -116,6 +116,7 @@ void playerCollisionCheck(SPEEDOMAN *s, MOVABLE_ENTRY *self) {
 
 void player(SPEEDOMAN *s, MOVABLE_ENTRY *self, MOVABLE_MSG msg) {
 	DARNIT_KEYS keys = d_keys_zero();
+	int i, x, y, box_x, box_y, box_w, box_h;
 
 	switch (msg) {
 		case MOVABLE_MSG_INIT:
@@ -175,7 +176,15 @@ void player(SPEEDOMAN *s, MOVABLE_ENTRY *self, MOVABLE_MSG msg) {
 			}
 			break;
 		case MOVABLE_MSG_DESTROY:
+			d_sprite_hitbox(self->sprite, &box_x, &box_y, &box_w, &box_h);
+			x = self->x / 1000 + box_x + box_w / 2;
+			y = self->y / 1000 + box_y + box_h / 2;
+			
+			for (i = 0; i < 4; i++)
+				d_particle_emitter_move(s->var.respawn.player_death[i], x, y);
+
 			s->var.meter_watch(s->var.meter.player_health, 0, NULL, 1);
+			s->var.meter_watch(s->var.meter.player_weapon, 0, NULL, 1);
 			s->var.respawn.request_respawn = -1;
 			s->var.respawn.respawn_time = 2000;
 		default:
